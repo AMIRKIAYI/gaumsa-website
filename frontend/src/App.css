@@ -1,0 +1,5 @@
+@layer base {
+  .font-arabic {
+    font-family: 'Amiri', serif;
+  }
+}
