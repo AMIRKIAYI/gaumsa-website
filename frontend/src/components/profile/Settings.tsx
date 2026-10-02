@@ -13,7 +13,7 @@ const Settings: React.FC = () => {
   });
 
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
+    name: user?.full_name || '',
     email: user?.email || '',
     department: '',
     year: '',

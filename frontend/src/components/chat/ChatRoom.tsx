@@ -52,7 +52,7 @@ const ChatRoom: React.FC = () => {
     const message: Message = {
       id: Date.now().toString(),
       userId: user.id,
-      userName: user.name,
+      userName: user.full_name,
       content: newMessage,
       timestamp: new Date()
     };
@@ -85,7 +85,7 @@ const ChatRoom: React.FC = () => {
             <div className="flex-shrink-0">
               {message.userId === user?.id ? (
                 <div className="w-10 h-10 rounded-full bg-gau-msa-primary text-white flex items-center justify-center">
-                  {user?.name?.charAt(0) || 'U'}
+                  {user?.full_name?.charAt(0) || 'U'}
                 </div>
               ) : (
                 <div className="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center">

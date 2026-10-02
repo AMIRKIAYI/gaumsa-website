@@ -41,12 +41,12 @@ const ProfileLayout: React.FC = () => {
               <div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary p-6 text-white text-center">
                 <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
                   {user?.avatar ? (
-                    <img src={user.avatar} alt={user.name} className="w-20 h-20 rounded-full" />
+                    <img src={user.avatar} alt={user.full_name} className="w-20 h-20 rounded-full" />
                   ) : (
-                    <span className="text-3xl font-bold">{user?.name?.charAt(0) || 'U'}</span>
+                    <span className="text-3xl font-bold">{user?.full_name?.charAt(0) || 'U'}</span>
                   )}
                 </div>
-                <h3 className="font-semibold text-lg">{user?.name}</h3>
+                <h3 className="font-semibold text-lg">{user?.full_name}</h3>
                 <p className="text-sm text-gau-msa-gold">{user?.email}</p>
                 <span className="inline-block mt-2 px-3 py-1 bg-white/20 rounded-full text-xs">
                   {user?.role === 'admin' ? 'Administrator' : 'Student Member'}

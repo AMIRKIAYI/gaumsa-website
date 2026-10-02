@@ -81,14 +81,14 @@ const Navbar: React.FC = () => {
                 }`}
               >
                 {user?.avatar ? (
-                  <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full ring-2 ring-gau-msa-primary/20" />
+                  <img src={user.avatar} alt={user.full_name} className="w-8 h-8 rounded-full ring-2 ring-gau-msa-primary/20" />
                 ) : (
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
                     isProfileDropdownOpen || location.pathname.startsWith('/profile')
                       ? 'bg-white/20 text-white'
                       : 'bg-gau-msa-primary text-white'
                   }`}>
-                    {user?.name?.charAt(0) || 'U'}
+                    {user?.full_name?.charAt(0) || 'U'}
                   </div>
                 )}
                 <span className="text-sm font-medium">My Profile</span>
@@ -100,14 +100,14 @@ const Navbar: React.FC = () => {
                   <div className="px-4 py-3 border-b border-gray-100">
                     <div className="flex items-center space-x-3">
                       {user?.avatar ? (
-                        <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full ring-2 ring-gau-msa-primary/20" />
+                        <img src={user.avatar} alt={user.full_name} className="w-10 h-10 rounded-full ring-2 ring-gau-msa-primary/20" />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-sm font-bold">
-                          {user?.name?.charAt(0) || 'U'}
+                          {user?.full_name?.charAt(0) || 'U'}
                         </div>
                       )}
                       <div>
-                        <p className="text-sm font-semibold text-gray-800">{user?.name}</p>
+                        <p className="text-sm font-semibold text-gray-800">{user?.full_name}</p>
                         <p className="text-xs text-gray-500">{user?.email}</p>
                       </div>
                     </div>
@@ -198,14 +198,14 @@ const Navbar: React.FC = () => {
               <div className="px-4 py-3 border-t border-gray-100 mt-2">
                 <div className="flex items-center space-x-3">
                   {user?.avatar ? (
-                    <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full ring-2 ring-gau-msa-primary/20" />
+                    <img src={user.avatar} alt={user.full_name} className="w-10 h-10 rounded-full ring-2 ring-gau-msa-primary/20" />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-sm font-bold">
-                      {user?.name?.charAt(0) || 'U'}
+                      {user?.full_name?.charAt(0) || 'U'}
                     </div>
                   )}
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-800">{user?.name}</p>
+                    <p className="text-sm font-semibold text-gray-800">{user?.full_name}</p>
                     <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
                 </div>
