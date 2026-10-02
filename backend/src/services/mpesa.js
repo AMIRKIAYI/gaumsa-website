@@ -42,7 +42,6 @@ const initiateSTKPush = async ({ phone, amount, accountReference, transactionDes
   const passkey = process.env.MPESA_PASSKEY;
   const password = getPassword(shortcode, passkey, timestamp);
 
-  // Format phone to 2547XXXXXXXX
   let formattedPhone = phone.replace(/\D/g, '');
   if (formattedPhone.startsWith('0')) {
     formattedPhone = '254' + formattedPhone.substring(1);
@@ -54,7 +53,7 @@ const initiateSTKPush = async ({ phone, amount, accountReference, transactionDes
     BusinessShortCode: shortcode,
     Password: password,
     Timestamp: timestamp,
-    TransactionType: 'CustomerPayBillOnline', // ← Sandbox only supports this
+    TransactionType: 'CustomerPayBillOnline',
     Amount: amount,
     PartyA: formattedPhone,
     PartyB: shortcode,
@@ -64,20 +63,30 @@ const initiateSTKPush = async ({ phone, amount, accountReference, transactionDes
     TransactionDesc: transactionDesc || 'GAUMSA Payment',
   };
 
-  console.log('📤 STK Push request:', JSON.stringify(payload, null, 2));
+  console.log('📤 STK Push payload:', JSON.stringify(payload, null, 2));
+  console.log('🔑 Access token (first 20 chars):', accessToken?.substring(0, 20));
+  console.log('🔑 Shortcode:', shortcode);
+  console.log('🔑 Callback URL:', process.env.MPESA_CALLBACK_URL);
 
-  const response = await axios.post(
-    `${getBaseUrl()}/mpesa/stkpush/v1/processrequest`,
-    payload,
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  return response.data;
+  try {
+    const response = await axios.post(
+      `${getBaseUrl()}/mpesa/stkpush/v1/processrequest`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('❌ SAFARICOM ERROR:');
+    console.error('   Status:', error.response?.status);
+    console.error('   Data:', JSON.stringify(error.response?.data, null, 2));
+    console.error('   Message:', error.message);
+    throw error;
+  }
 };
 
 module.exports = { getAccessToken, initiateSTKPush, getTimestamp, getPassword };
