@@ -199,22 +199,29 @@ const RamadanPayment: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary rounded-2xl p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center space-x-2 text-gau-msa-gold text-sm font-semibold mb-2">
-              <span>🌙</span>
-              <span>RAMADAN PROGRAM 2026</span>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold">Register for Ramadan Iftar Program</h1>
-            <p className="text-gray-200 mt-2">Join our community for Iftar throughout the holy month</p>
-          </div>
-          <div className="text-right hidden md:block">
-            <div className="text-sm text-gray-300">Registration Fee</div>
-            <div className="text-3xl font-bold text-gau-msa-gold">Ksh {RAMADAN_FEE}</div>
-          </div>
-        </div>
+      {/* Header - Mobile Optimized */}
+<div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary rounded-2xl p-4 md:p-6 text-white">
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div>
+      <div className="flex items-center space-x-2 text-gau-msa-gold text-xs md:text-sm font-semibold mb-1">
+        <span>🌙</span>
+        <span>RAMADAN PROGRAM 2026</span>
       </div>
+      <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">
+        Ramadan Iftar Program
+      </h1>
+      <p className="text-gray-200 text-sm md:text-base mt-1">
+        Join our community for Iftar
+      </p>
+    </div>
+    <div className="md:text-right">
+      <div className="text-xs md:text-sm text-gray-300">Registration Fee</div>
+      <div className="text-2xl md:text-3xl font-bold text-gau-msa-gold">
+        Ksh {RAMADAN_FEE}
+      </div>
+    </div>
+  </div>
+</div>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Info Side */}
