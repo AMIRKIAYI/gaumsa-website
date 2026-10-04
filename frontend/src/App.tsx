@@ -18,8 +18,8 @@ import RegistrarDashboard from './components/registrar/RegistrarDashboard';
 import PartnerLogo from './components/home/PartnerLogo';
 import AlumniCard from './components/home/AlumniCard';
 import { partners, alumni } from './data/partners';
-import { 
-  User, Calendar, Users, Target, Eye, Heart, Handshake, 
+import {
+  User, Calendar, Users, Target, Eye, Heart, Handshake,
   TrendingUp, ArrowRight, CheckCircle, Award,
   BookOpen, Mic, Globe, Sparkles
 } from 'lucide-react';
@@ -36,9 +36,7 @@ import Nawawi40 from './components/islamic/Nawawi40';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, token, isInitialized } = useAuth();
-  
-  console.log('🛡️ ProtectedRoute — initialized:', isInitialized, '| user:', user?.email, '| token:', !!token);
-  
+
   if (!isInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -46,9 +44,8 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       </div>
     );
   }
-  
+
   if (!user || !token) {
-    console.log('❌ ProtectedRoute: no user/token → /login');
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
@@ -56,9 +53,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
 const RegistrarRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, token, isInitialized } = useAuth();
-  
-  console.log('🛡️ RegistrarRoute — initialized:', isInitialized, '| user:', user?.email, '| role:', user?.role);
-  
+
   if (!isInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -66,20 +61,17 @@ const RegistrarRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       </div>
     );
   }
-  
+
   if (!user || !token) {
-    console.log('❌ RegistrarRoute: no user/token → /login');
     return <Navigate to="/login" replace />;
   }
   if (user.role !== 'admin' && user.role !== 'registrar') {
-    console.log('❌ RegistrarRoute: wrong role → /');
     return <Navigate to="/" replace />;
   }
-  console.log('✅ RegistrarRoute: access granted');
   return <>{children}</>;
 };
 
-// ==================== LAYOUT WRAPPER ====================
+// ==================== LAYOUT WRAPPERS ====================
 
 const AuthenticatedLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -89,20 +81,30 @@ const AuthenticatedLayout: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
+// ✅ NEW: A wrapper that adds consistent top padding for standalone pages
+// Use this for pages rendered outside ProfileLayout (Hadiths, Athkar, Quran, etc.)
+const PageContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <div className="container-custom pt-4 md:pt-6 pb-8 md:pb-12">
+      {children}
+    </div>
+  );
+};
+
 // ==================== QURAN WRAPPER PAGES ====================
 
 const QuranPage = () => {
   const navigate = useNavigate();
   return (
     <AuthenticatedLayout>
-      <div className="pt-4 container-custom py-8">
+      <PageContainer>
         <SurahList
           onSelectSurah={(surahNumber, ayahNumber) => {
             const hash = ayahNumber ? `#ayah-${ayahNumber}` : '';
             navigate(`/quran/${surahNumber}${hash}`);
           }}
         />
-      </div>
+      </PageContainer>
     </AuthenticatedLayout>
   );
 };
@@ -111,24 +113,24 @@ const QuranReaderPage = () => {
   const navigate = useNavigate();
   const params = useParams();
   const surahNumber = parseInt(params.surahNumber || '1');
-  
+
   const [hash, setHash] = React.useState(window.location.hash);
-  
+
   React.useEffect(() => {
     const handleHashChange = () => setHash(window.location.hash);
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
-  
+
   return (
     <AuthenticatedLayout>
-      <div className="pt-4 container-custom py-8">
-        <QuranReader 
+      <PageContainer>
+        <QuranReader
           key={`${surahNumber}-${hash}`}
           surahNumber={surahNumber}
           onBack={() => navigate('/quran')}
         />
-      </div>
+      </PageContainer>
     </AuthenticatedLayout>
   );
 };
@@ -171,29 +173,26 @@ const Home = () => {
 
   return (
     <>
-      {/* ==================== HERO ==================== */}
+      {/* HERO */}
       <section className="min-h-[calc(100vh-4rem)] flex items-center relative overflow-hidden">
-        {/* Responsive background image — no aggressive scale on mobile */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center animate-zoom"
-          style={{ 
-            backgroundImage: `url(${mosqueBg})`, 
-            backgroundSize: 'cover', 
+          style={{
+            backgroundImage: `url(${mosqueBg})`,
+            backgroundSize: 'cover',
             backgroundPosition: 'center center',
           }}
         />
-        
-        {/* Overlay */}
+
         <div className="absolute inset-0 bg-gradient-to-br from-gau-msa-primary/30 to-gau-msa-secondary/30" />
-        
-        {/* Content */}
+
         <div className="container-custom text-white py-16 md:py-20 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
             <div className="flex justify-center mb-4 md:mb-0">
-              <img 
-                src={gaumsaLogo} 
-                alt="GAUMSA Logo" 
-                className="h-16 md:h-20 w-auto object-contain" 
+              <img
+                src={gaumsaLogo}
+                alt="GAUMSA Logo"
+                className="h-16 md:h-20 w-auto object-contain"
               />
             </div>
             <h1 className="text-3xl md:text-6xl font-bold mb-4 md:mb-6 font-arabic">
@@ -207,22 +206,22 @@ const Home = () => {
               Uniting Muslim students in faith, knowledge, and community service with modern technology and Islamic values
             </p>
             <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-              <button 
-                onClick={() => handleNavigation('/profile/dashboard')} 
+              <button
+                onClick={() => handleNavigation('/profile/dashboard')}
                 className="bg-gau-msa-gold text-white px-5 md:px-8 py-3 md:py-4 rounded-lg font-semibold hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-lg flex items-center space-x-2 group text-sm md:text-base"
               >
                 <User className="h-4 md:h-5 w-4 md:w-5 group-hover:rotate-12 transition-transform" />
                 <span>My Profile</span>
               </button>
-              <button 
-                onClick={() => handleNavigation('/activities')} 
+              <button
+                onClick={() => handleNavigation('/activities')}
                 className="bg-white text-gau-msa-primary px-5 md:px-8 py-3 md:py-4 rounded-lg font-semibold hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-lg flex items-center space-x-2 group text-sm md:text-base"
               >
                 <Calendar className="h-4 md:h-5 w-4 md:w-5 group-hover:rotate-12 transition-transform" />
                 <span>View Activities</span>
               </button>
-              <button 
-                onClick={() => handleNavigation('/leadership')} 
+              <button
+                onClick={() => handleNavigation('/leadership')}
                 className="bg-transparent border-2 border-white text-white px-5 md:px-8 py-3 md:py-4 rounded-lg font-semibold hover:bg-white hover:text-gau-msa-primary hover:scale-105 transition-all duration-300 flex items-center space-x-2 group text-sm md:text-base"
               >
                 <Users className="h-4 md:h-5 w-4 md:w-5 group-hover:rotate-12 transition-transform" />
@@ -233,7 +232,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ==================== MISSION VISION PROMISE ==================== */}
+      {/* MISSION VISION PROMISE */}
       <section className="py-12 md:py-20 bg-white">
         <div className="container-custom">
           <div className="text-center mb-8 md:mb-12">
@@ -245,8 +244,8 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
             {missionVisionPromise.map((item, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100"
               >
                 <div className={`h-2 bg-gradient-to-r ${item.color}`}></div>
@@ -265,7 +264,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ==================== PARTNERS ==================== */}
+      {/* PARTNERS */}
       <section className="py-12 md:py-20 bg-white overflow-hidden">
         <div className="container-custom">
           <div className="text-center mb-10 md:mb-16">
@@ -289,7 +288,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ==================== ALUMNI ==================== */}
+      {/* ALUMNI */}
       <section className="py-12 md:py-20 bg-white">
         <div className="container-custom">
           <div className="text-center mb-8 md:mb-12">
@@ -305,8 +304,8 @@ const Home = () => {
             ))}
           </div>
           <div className="text-center mt-8 md:mt-10">
-            <button 
-              onClick={() => handleNavigation('/leadership')} 
+            <button
+              onClick={() => handleNavigation('/leadership')}
               className="inline-flex items-center space-x-2 bg-gau-msa-primary text-white px-5 md:px-6 py-2.5 md:py-3 rounded-lg hover:bg-gau-msa-secondary transition-all group text-sm md:text-base"
             >
               <span>Meet Our Current Leaders</span>
@@ -316,7 +315,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ==================== IMPACT ==================== */}
+      {/* IMPACT */}
       <section className="py-12 md:py-20 bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary text-white relative overflow-hidden">
         <div className="container-custom relative z-10">
           <div className="text-center mb-8 md:mb-12">
@@ -328,8 +327,8 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6">
             {impactStats.map((stat, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 md:p-6 text-center hover:bg-white/20 transition-all hover:scale-105 border border-white/10"
               >
                 <div className="w-9 md:w-12 h-9 md:h-12 mx-auto mb-2 md:mb-3 rounded-xl bg-white/20 flex items-center justify-center">
@@ -346,15 +345,15 @@ const Home = () => {
               Join a community of believers who are committed to excellence in faith, knowledge, and service.
             </p>
             <div className="flex flex-wrap justify-center gap-3 md:gap-4">
-              <button 
-                onClick={() => handleNavigation('/register')} 
+              <button
+                onClick={() => handleNavigation('/register')}
                 className="bg-gau-msa-gold text-gau-msa-primary px-5 md:px-8 py-2.5 md:py-3 rounded-lg font-semibold hover:opacity-90 transition-all flex items-center space-x-2 shadow-lg text-sm md:text-base"
               >
                 <CheckCircle className="h-4 md:h-5 w-4 md:w-5" />
                 <span>Join GAUMSA Today</span>
               </button>
-              <button 
-                onClick={() => handleNavigation('/activities')} 
+              <button
+                onClick={() => handleNavigation('/activities')}
                 className="bg-white text-gau-msa-primary px-5 md:px-8 py-2.5 md:py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all flex items-center space-x-2 text-sm md:text-base"
               >
                 <Calendar className="h-4 md:h-5 w-4 md:w-5" />
@@ -365,7 +364,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ==================== PROGRAMS ==================== */}
+      {/* PROGRAMS */}
       <section className="py-12 md:py-16 bg-gray-50">
         <div className="container-custom">
           <h2 className="text-2xl md:text-3xl font-bold text-gau-msa-primary text-center mb-8 md:mb-12">
@@ -404,8 +403,6 @@ const Home = () => {
 function AppContent() {
   const { user, isInitialized } = useAuth();
 
-  console.log('📍 AppContent — initialized:', isInitialized, '| path:', window.location.pathname);
-
   if (!isInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -423,9 +420,10 @@ function AppContent() {
       <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
       <Route path="/register" element={!user ? <Register /> : <Navigate to="/" replace />} />
 
-      {/* Authenticated routes */}
+      {/* Home */}
       <Route path="/" element={<AuthenticatedLayout><Home /></AuthenticatedLayout>} />
-      
+
+      {/* Profile Routes (uses ProfileLayout with its own top padding) */}
       <Route path="/profile" element={<AuthenticatedLayout><ProfileLayout /></AuthenticatedLayout>}>
         <Route index element={<Navigate to="/profile/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
@@ -434,40 +432,97 @@ function AppContent() {
         <Route path="settings" element={<Settings />} />
       </Route>
 
-      <Route path="/ramadan" element={<AuthenticatedLayout><RamadanPayment /></AuthenticatedLayout>} />
-      
+      {/* Ramadan */}
+      <Route path="/ramadan" element={
+        <AuthenticatedLayout>
+          <PageContainer>
+            <RamadanPayment />
+          </PageContainer>
+        </AuthenticatedLayout>
+      } />
+
+      {/* Registrar */}
       <Route path="/registrar" element={
         <RegistrarRoute>
           <Layout>
-            <div className="pt-4 container-custom py-8">
+            <PageContainer>
               <RegistrarDashboard />
-            </div>
+            </PageContainer>
           </Layout>
         </RegistrarRoute>
       } />
 
+      {/* Admin Ramadan */}
       <Route path="/admin/ramadan" element={
         <RegistrarRoute>
           <Layout>
-            <div className="pt-4 container-custom py-8">
+            <PageContainer>
               <RamadanPayments />
-            </div>
+            </PageContainer>
           </Layout>
         </RegistrarRoute>
       } />
 
-      <Route path="/activities" element={<AuthenticatedLayout><Activities /></AuthenticatedLayout>} />
-      <Route path="/leadership" element={<AuthenticatedLayout><Leadership /></AuthenticatedLayout>} />
-      <Route path="/prayer" element={<AuthenticatedLayout><PrayerTimes /></AuthenticatedLayout>} />
-      <Route path="/hadiths/collections" element={<AuthenticatedLayout><HadithCollections /></AuthenticatedLayout>} />
-      <Route path="/hadiths" element={<AuthenticatedLayout><Hadiths /></AuthenticatedLayout>} />
-      <Route path="/athkar" element={<AuthenticatedLayout><Athkar /></AuthenticatedLayout>} />
-      <Route path="/hadiths/collections" element={<AuthenticatedLayout><HadithCollections /></AuthenticatedLayout>} />
-      <Route path="/nawawi40" element={<AuthenticatedLayout><Nawawi40 /></AuthenticatedLayout>} />
+      {/* Islamic & Community Pages — all use PageContainer */}
+      <Route path="/activities" element={
+        <AuthenticatedLayout>
+          <PageContainer>
+            <Activities />
+          </PageContainer>
+        </AuthenticatedLayout>
+      } />
 
+      <Route path="/leadership" element={
+        <AuthenticatedLayout>
+          <PageContainer>
+            <Leadership />
+          </PageContainer>
+        </AuthenticatedLayout>
+      } />
+
+      <Route path="/prayer" element={
+        <AuthenticatedLayout>
+          <PageContainer>
+            <PrayerTimes />
+          </PageContainer>
+        </AuthenticatedLayout>
+      } />
+
+      <Route path="/hadiths" element={
+        <AuthenticatedLayout>
+          <PageContainer>
+            <Hadiths />
+          </PageContainer>
+        </AuthenticatedLayout>
+      } />
+
+      <Route path="/hadiths/collections" element={
+        <AuthenticatedLayout>
+          <PageContainer>
+            <HadithCollections />
+          </PageContainer>
+        </AuthenticatedLayout>
+      } />
+
+      <Route path="/athkar" element={
+        <AuthenticatedLayout>
+          <PageContainer>
+            <Athkar />
+          </PageContainer>
+        </AuthenticatedLayout>
+      } />
+
+      <Route path="/nawawi40" element={
+        <AuthenticatedLayout>
+          <PageContainer>
+            <Nawawi40 />
+          </PageContainer>
+        </AuthenticatedLayout>
+      } />
+
+      {/* Quran */}
       <Route path="/quran" element={<QuranPage />} />
       <Route path="/quran/:surahNumber" element={<QuranReaderPage />} />
-      
 
       {/* Redirects */}
       <Route path="/dashboard" element={<Navigate to="/profile/dashboard" replace />} />

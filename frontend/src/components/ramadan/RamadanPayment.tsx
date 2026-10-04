@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../services/api';
-import { 
-  CreditCard, CheckCircle, Clock, XCircle, Phone, 
-  User, Hash, AlertCircle, Loader2, Smartphone, Shield
+import {
+  CreditCard,
+  CheckCircle,
+  XCircle,
+  Phone,
+  User,
+  Hash,
+  AlertCircle,
+  Loader2,
+  Smartphone,
+  Shield,
 } from 'lucide-react';
+import PageHeader from '../ui/PageHeader';
 
 const RAMADAN_FEE = 1000;
 
 const RamadanPayment: React.FC = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     reg_no: '',
     full_name: user?.full_name || '',
@@ -17,7 +26,9 @@ const RamadanPayment: React.FC = () => {
   });
   const [loading, setLoading] = useState(false);
   const [checkoutId, setCheckoutId] = useState<string | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'pending' | 'completed' | 'failed'>('idle');
+  const [paymentStatus, setPaymentStatus] = useState<
+    'idle' | 'pending' | 'completed' | 'failed'
+  >('idle');
   const [error, setError] = useState('');
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
 
@@ -25,7 +36,6 @@ const RamadanPayment: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Submit payment → triggers M-Pesa PIN prompt
   const handlePay = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -68,9 +78,8 @@ const RamadanPayment: React.FC = () => {
           clearInterval(interval);
         }
       }
-    }, 3000); // Check every 3 seconds
+    }, 3000);
 
-    // Stop polling after 2 minutes
     const timeout = setTimeout(() => {
       clearInterval(interval);
       if (paymentStatus === 'pending') {
@@ -89,33 +98,48 @@ const RamadanPayment: React.FC = () => {
   if (paymentStatus === 'completed') {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-green-100">
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-8 text-white text-center">
-            <CheckCircle className="h-20 w-20 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold">Payment Successful!</h2>
-            <p className="text-green-100 mt-2">JazakAllah Khair for your contribution</p>
+        <PageHeader
+          title="Payment Complete"
+          subtitle="Your registration is confirmed"
+        />
+        <div className="bg-white rounded-2xl shadow-sm border border-green-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6 md:p-8 text-white text-center">
+            <CheckCircle className="h-14 w-14 md:h-20 md:w-20 mx-auto mb-3 md:mb-4" />
+            <h2 className="text-2xl md:text-3xl font-bold">
+              Payment Successful!
+            </h2>
+            <p className="text-green-100 mt-2 text-sm md:text-base">
+              JazakAllah Khair for your contribution
+            </p>
           </div>
-          <div className="p-6 space-y-4">
-            <div className="flex justify-between text-sm">
+          <div className="p-4 md:p-6 space-y-3 md:space-y-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between text-sm gap-1">
               <span className="text-gray-500">Registration No:</span>
-              <span className="font-mono font-medium">{paymentDetails?.reg_no}</span>
+              <span className="font-mono font-medium break-all">
+                {paymentDetails?.reg_no}
+              </span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex flex-col sm:flex-row sm:justify-between text-sm gap-1">
               <span className="text-gray-500">Name:</span>
               <span className="font-medium">{paymentDetails?.full_name}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex flex-col sm:flex-row sm:justify-between text-sm gap-1">
               <span className="text-gray-500">Amount Paid:</span>
-              <span className="font-bold text-green-600">Ksh {paymentDetails?.amount?.toLocaleString()}</span>
+              <span className="font-bold text-green-600">
+                Ksh {paymentDetails?.amount?.toLocaleString()}
+              </span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex flex-col sm:flex-row sm:justify-between text-sm gap-1">
               <span className="text-gray-500">M-Pesa Code:</span>
-              <span className="font-mono font-medium">{paymentDetails?.mpesa_code || 'Processing...'}</span>
+              <span className="font-mono font-medium break-all">
+                {paymentDetails?.mpesa_code || 'Processing...'}
+              </span>
             </div>
 
-            <div className="mt-6 p-4 bg-green-50 rounded-lg text-center">
-              <p className="text-sm text-green-700">
-                Your registration for the Ramadan Program is confirmed. We look forward to having you!
+            <div className="mt-4 md:mt-6 p-3 md:p-4 bg-green-50 rounded-lg text-center">
+              <p className="text-xs md:text-sm text-green-700">
+                Your registration for the Ramadan Program is confirmed. We
+                look forward to having you!
               </p>
             </div>
           </div>
@@ -128,40 +152,53 @@ const RamadanPayment: React.FC = () => {
   if (paymentStatus === 'pending') {
     return (
       <div className="max-w-lg mx-auto">
-        <div className="bg-white rounded-2xl shadow-lg p-8 text-center border border-amber-100">
-          <div className="relative w-24 h-24 mx-auto mb-6">
+        <PageHeader
+          title="Awaiting Payment"
+          subtitle="Complete the prompt on your phone"
+        />
+        <div className="bg-white rounded-2xl shadow-sm border border-amber-100 p-5 md:p-8 text-center">
+          <div className="relative w-20 h-20 md:w-24 md:h-24 mx-auto mb-5 md:mb-6">
             <div className="absolute inset-0 rounded-full bg-amber-100 animate-ping"></div>
-            <div className="relative w-24 h-24 rounded-full bg-amber-500 flex items-center justify-center">
-              <Smartphone className="h-12 w-12 text-white" />
+            <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full bg-amber-500 flex items-center justify-center">
+              <Smartphone className="h-10 w-10 md:h-12 md:w-12 text-white" />
             </div>
           </div>
-          
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">
+
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">
             Check Your Phone
           </h2>
-          <p className="text-gray-600 mb-6">
-            We've sent a payment request to <strong>{formData.phone}</strong>.
-            Enter your M-Pesa PIN to complete the payment.
+          <p className="text-gray-600 mb-4 md:mb-6 text-sm md:text-base">
+            We've sent a payment request to{' '}
+            <strong className="break-all">{formData.phone}</strong>. Enter your
+            M-Pesa PIN to complete the payment.
           </p>
 
-          <div className="bg-amber-50 rounded-lg p-4 mb-6">
+          <div className="bg-amber-50 rounded-lg p-3 md:p-4 mb-4 md:mb-6">
             <div className="flex items-center justify-center space-x-2 text-amber-700">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm font-medium">Waiting for payment confirmation...</span>
+              <span className="text-xs md:text-sm font-medium">
+                Waiting for payment confirmation...
+              </span>
             </div>
           </div>
 
           <div className="space-y-3 text-left text-sm text-gray-600">
             <div className="flex items-center space-x-2">
-              <span className="w-6 h-6 rounded-full bg-gau-msa-primary text-white text-xs flex items-center justify-center">1</span>
+              <span className="w-6 h-6 rounded-full bg-gau-msa-primary text-white text-xs flex items-center justify-center flex-shrink-0">
+                1
+              </span>
               <span>Check your phone for the M-Pesa prompt</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="w-6 h-6 rounded-full bg-gau-msa-primary text-white text-xs flex items-center justify-center">2</span>
+              <span className="w-6 h-6 rounded-full bg-gau-msa-primary text-white text-xs flex items-center justify-center flex-shrink-0">
+                2
+              </span>
               <span>Enter your M-Pesa PIN</span>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="w-6 h-6 rounded-full bg-gau-msa-primary text-white text-xs flex items-center justify-center">3</span>
+              <span className="w-6 h-6 rounded-full bg-gau-msa-primary text-white text-xs flex items-center justify-center flex-shrink-0">
+                3
+              </span>
               <span>Wait for confirmation (do not close this page)</span>
             </div>
           </div>
@@ -174,19 +211,27 @@ const RamadanPayment: React.FC = () => {
   if (paymentStatus === 'failed') {
     return (
       <div className="max-w-lg mx-auto">
-        <div className="bg-white rounded-2xl shadow-lg p-8 text-center border border-red-100">
-          <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-            <XCircle className="h-12 w-12 text-red-500" />
+        <PageHeader
+          title="Payment Failed"
+          subtitle="Something went wrong with your payment"
+        />
+        <div className="bg-white rounded-2xl shadow-sm border border-red-100 p-5 md:p-8 text-center">
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+            <XCircle className="h-10 w-10 md:h-12 md:w-12 text-red-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">Payment Failed</h2>
-          <p className="text-gray-600 mb-6">{error || 'The payment could not be completed.'}</p>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-3">
+            Payment Failed
+          </h2>
+          <p className="text-gray-600 mb-5 md:mb-6 text-sm md:text-base">
+            {error || 'The payment could not be completed.'}
+          </p>
           <button
             onClick={() => {
               setPaymentStatus('idle');
               setError('');
               setCheckoutId(null);
             }}
-            className="bg-gau-msa-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-gau-msa-secondary transition"
+            className="bg-gau-msa-primary text-white px-5 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold hover:bg-gau-msa-secondary active:scale-95 transition-all text-sm md:text-base"
           >
             Try Again
           </button>
@@ -197,88 +242,121 @@ const RamadanPayment: React.FC = () => {
 
   // ============ PAYMENT FORM ============
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      {/* Header - Mobile Optimized */}
-<div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary rounded-2xl p-4 md:p-6 text-white">
-  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-    <div>
-      <div className="flex items-center space-x-2 text-gau-msa-gold text-xs md:text-sm font-semibold mb-1">
-        <span>🌙</span>
-        <span>RAMADAN PROGRAM 2026</span>
-      </div>
-      <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">
-        Ramadan Iftar Program
-      </h1>
-      <p className="text-gray-200 text-sm md:text-base mt-1">
-        Join our community for Iftar
-      </p>
-    </div>
-    <div className="md:text-right">
-      <div className="text-xs md:text-sm text-gray-300">Registration Fee</div>
-      <div className="text-2xl md:text-3xl font-bold text-gau-msa-gold">
-        Ksh {RAMADAN_FEE}
-      </div>
-    </div>
-  </div>
-</div>
+    <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
+      <PageHeader
+        title="Ramadan Program"
+        subtitle="Register and pay for the Iftar program"
+      />
 
-      <div className="grid md:grid-cols-2 gap-6">
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary rounded-2xl p-4 md:p-6 text-white shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div>
+            <div className="flex items-center space-x-2 text-gau-msa-gold text-xs md:text-sm font-semibold mb-1">
+              <span>🌙</span>
+              <span>RAMADAN PROGRAM 2026</span>
+            </div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold">
+              Ramadan Iftar Program
+            </h1>
+            <p className="text-gray-200 text-sm md:text-base mt-1">
+              Join our community for Iftar
+            </p>
+          </div>
+          <div className="md:text-right">
+            <div className="text-xs md:text-sm text-gray-300">
+              Registration Fee
+            </div>
+            <div className="text-2xl md:text-3xl font-bold text-gau-msa-gold">
+              Ksh {RAMADAN_FEE.toLocaleString()}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Info Side */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 order-2 md:order-1">
           <div className="flex items-center space-x-3 mb-4">
             <div className="p-2 bg-gau-msa-primary/10 rounded-lg">
               <Smartphone className="h-5 w-5 text-gau-msa-primary" />
             </div>
-            <h3 className="font-bold text-gray-800">How It Works</h3>
+            <h3 className="font-bold text-gray-800 text-sm md:text-base">
+              How It Works
+            </h3>
           </div>
 
-          <ol className="space-y-4">
+          <ol className="space-y-3 md:space-y-4">
             <li className="flex space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-xs font-bold">1</div>
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-xs font-bold">
+                1
+              </div>
               <div className="text-sm">
-                <p className="font-medium text-gray-800">Fill in your details</p>
-                <p className="text-gray-500 text-xs mt-0.5">Registration number, full name, and phone</p>
+                <p className="font-medium text-gray-800">
+                  Fill in your details
+                </p>
+                <p className="text-gray-500 text-xs mt-0.5">
+                  Registration number, full name, and phone
+                </p>
               </div>
             </li>
             <li className="flex space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-xs font-bold">2</div>
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-xs font-bold">
+                2
+              </div>
               <div className="text-sm">
-                <p className="font-medium text-gray-800">Click "Pay Ksh {RAMADAN_FEE}"</p>
-                <p className="text-gray-500 text-xs mt-0.5">An M-Pesa prompt will appear on your phone</p>
+                <p className="font-medium text-gray-800">
+                  Click "Pay Ksh {RAMADAN_FEE.toLocaleString()}"
+                </p>
+                <p className="text-gray-500 text-xs mt-0.5">
+                  An M-Pesa prompt will appear on your phone
+                </p>
               </div>
             </li>
             <li className="flex space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-xs font-bold">3</div>
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-xs font-bold">
+                3
+              </div>
               <div className="text-sm">
-                <p className="font-medium text-gray-800">Enter your M-Pesa PIN</p>
-                <p className="text-gray-500 text-xs mt-0.5">Complete the payment on your phone</p>
+                <p className="font-medium text-gray-800">
+                  Enter your M-Pesa PIN
+                </p>
+                <p className="text-gray-500 text-xs mt-0.5">
+                  Complete the payment on your phone
+                </p>
               </div>
             </li>
             <li className="flex space-x-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gau-msa-gold text-white flex items-center justify-center text-xs font-bold">✓</div>
+              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gau-msa-gold text-white flex items-center justify-center text-xs font-bold">
+                ✓
+              </div>
               <div className="text-sm">
                 <p className="font-medium text-gray-800">Done!</p>
-                <p className="text-gray-500 text-xs mt-0.5">Your registration is confirmed automatically</p>
+                <p className="text-gray-500 text-xs mt-0.5">
+                  Your registration is confirmed automatically
+                </p>
               </div>
             </li>
           </ol>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg flex items-start space-x-2">
+          <div className="mt-4 md:mt-6 p-3 md:p-4 bg-blue-50 rounded-lg flex items-start space-x-2">
             <Shield className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-blue-700">
-              Secure payment powered by Safaricom M-Pesa. Your PIN is never shared with us.
+            <p className="text-[11px] md:text-xs text-blue-700">
+              Secure payment powered by Safaricom M-Pesa. Your PIN is never
+              shared with us.
             </p>
           </div>
         </div>
 
         {/* Payment Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 order-1 md:order-2">
           <div className="flex items-center space-x-3 mb-4">
             <div className="p-2 bg-gau-msa-gold/20 rounded-lg">
               <CreditCard className="h-5 w-5 text-gau-msa-primary" />
             </div>
-            <h3 className="font-bold text-gray-800">Your Details</h3>
+            <h3 className="font-bold text-gray-800 text-sm md:text-base">
+              Your Details
+            </h3>
           </div>
 
           <form onSubmit={handlePay} className="space-y-4">
@@ -294,7 +372,7 @@ const RamadanPayment: React.FC = () => {
                 Registration Number *
               </label>
               <div className="relative">
-                <Hash className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
                   name="reg_no"
@@ -302,7 +380,7 @@ const RamadanPayment: React.FC = () => {
                   value={formData.reg_no}
                   onChange={handleChange}
                   placeholder="GAU-2024-001"
-                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+                  className="w-full pl-9 pr-3 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                 />
               </div>
             </div>
@@ -312,7 +390,7 @@ const RamadanPayment: React.FC = () => {
                 Full Name *
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
                   name="full_name"
@@ -320,7 +398,7 @@ const RamadanPayment: React.FC = () => {
                   value={formData.full_name}
                   onChange={handleChange}
                   placeholder="Ahmed Hassan"
-                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+                  className="w-full pl-9 pr-3 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                 />
               </div>
             </div>
@@ -330,7 +408,7 @@ const RamadanPayment: React.FC = () => {
                 M-Pesa Phone Number *
               </label>
               <div className="relative">
-                <Phone className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="tel"
                   name="phone"
@@ -338,7 +416,8 @@ const RamadanPayment: React.FC = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="0712345678"
-                  className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+                  inputMode="tel"
+                  className="w-full pl-9 pr-3 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                 />
               </div>
               <p className="text-xs text-gray-500 mt-1">
@@ -346,27 +425,33 @@ const RamadanPayment: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+            <div className="bg-gray-50 rounded-lg p-3 md:p-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Registration Fee</span>
-                <span className="font-bold text-gau-msa-primary">Ksh {RAMADAN_FEE.toLocaleString()}</span>
+                <span className="font-bold text-gau-msa-primary">
+                  Ksh {RAMADAN_FEE.toLocaleString()}
+                </span>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 shadow-lg"
+              className="w-full bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary text-white py-3.5 md:py-3 rounded-lg font-semibold hover:opacity-90 active:scale-[0.98] transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 shadow-lg"
             >
               {loading ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Sending M-Pesa Prompt...</span>
+                  <span className="text-sm md:text-base">
+                    Sending M-Pesa Prompt...
+                  </span>
                 </>
               ) : (
                 <>
                   <Smartphone className="h-5 w-5" />
-                  <span>Pay Ksh {RAMADAN_FEE.toLocaleString()} via M-Pesa</span>
+                  <span className="text-sm md:text-base">
+                    Pay Ksh {RAMADAN_FEE.toLocaleString()} via M-Pesa
+                  </span>
                 </>
               )}
             </button>
