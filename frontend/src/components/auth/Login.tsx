@@ -34,32 +34,34 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary py-6 md:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-6 md:space-y-8 bg-white p-5 sm:p-6 md:p-8 rounded-2xl shadow-2xl">
         {/* Logo */}
         <div className="flex justify-center">
           <img 
             src={gaumsaLogo} 
             alt="GAUMSA Logo" 
-            className="h-20 w-auto object-contain"
+            className="h-16 sm:h-20 w-auto object-contain"
           />
         </div>
         
-        <h2 className="text-center text-3xl font-extrabold text-gau-msa-primary">
-          Welcome to GAUMSA
-        </h2>
-        <p className="text-center text-sm text-gray-600">
-          Sign in to access the Muslim student community
-        </p>
+        <div>
+          <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-gau-msa-primary">
+            Welcome to GAUMSA
+          </h2>
+          <p className="mt-2 text-center text-xs sm:text-sm text-gray-600">
+            Sign in to access the Muslim student community
+          </p>
+        </div>
         
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start space-x-2">
-            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <span className="text-sm">{error}</span>
+          <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg flex items-start space-x-2">
+            <AlertCircle className="h-4 sm:h-5 w-4 sm:w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <span className="text-xs sm:text-sm">{error}</span>
           </div>
         )}
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -75,7 +77,9 @@ const Login: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent"
+                  autoComplete="email"
+                  inputMode="email"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="student@example.com"
                 />
               </div>
@@ -95,26 +99,27 @@ const Login: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent"
+                  autoComplete="current-password"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="••••••••"
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center">
               <input
                 id="remember-me"
                 type="checkbox"
                 className="h-4 w-4 text-gau-msa-primary focus:ring-gau-msa-primary border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              <label htmlFor="remember-me" className="ml-2 block text-xs sm:text-sm text-gray-900">
                 Remember me
               </label>
             </div>
 
-            <div className="text-sm">
+            <div className="text-xs sm:text-sm">
               <a href="#" className="font-medium text-gau-msa-primary hover:text-gau-msa-secondary">
                 Forgot password?
               </a>
@@ -125,7 +130,7 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gau-msa-primary hover:bg-gau-msa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gau-msa-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gau-msa-primary hover:bg-gau-msa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gau-msa-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               {isLoading ? (
                 <Loader2 className="animate-spin h-5 w-5" />
@@ -136,26 +141,26 @@ const Login: React.FC = () => {
           </div>
         </form>
 
-        <div className="mt-6">
+        <div>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
             </div>
-            <div className="relative flex justify-center text-sm">
+            <div className="relative flex justify-center text-xs sm:text-sm">
               <span className="px-2 bg-white text-gray-500">
                 Don't have an account?
               </span>
             </div>
           </div>
-          <div className="mt-4 text-center">
-            <a href="/register" className="font-medium text-gau-msa-primary hover:text-gau-msa-secondary">
+          <div className="mt-3 sm:mt-4 text-center">
+            <a href="/register" className="font-medium text-gau-msa-primary hover:text-gau-msa-secondary text-sm">
               Register now
             </a>
           </div>
         </div>
 
-        <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">
+        <div className="text-center">
+          <p className="text-[11px] sm:text-xs text-gray-500 italic leading-relaxed">
             "Whoever follows a path in search of knowledge, Allah will make easy for him a path to Paradise."
           </p>
         </div>

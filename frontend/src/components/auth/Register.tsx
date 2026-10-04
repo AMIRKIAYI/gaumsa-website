@@ -19,7 +19,6 @@ const Register: React.FC = () => {
     setError('');
     setSuccess('');
 
-    // Validate inputs
     if (!name.trim()) {
       setError('Please enter your full name');
       return;
@@ -45,12 +44,10 @@ const Register: React.FC = () => {
       
       if (result.success) {
         setSuccess(result.message || 'Account created successfully! Please wait for verification.');
-        // Clear form
         setName('');
         setEmail('');
         setPassword('');
         setConfirmPassword('');
-        // Redirect to login after 3 seconds
         setTimeout(() => {
           navigate('/login');
         }, 3000);
@@ -63,41 +60,41 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary py-6 md:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-6 md:space-y-8 bg-white p-5 sm:p-6 md:p-8 rounded-2xl shadow-2xl">
         {/* Logo */}
         <div className="flex justify-center">
           <img 
             src={gaumsaLogo} 
             alt="GAUMSA Logo" 
-            className="h-20 w-auto object-contain"
+            className="h-16 sm:h-20 w-auto object-contain"
           />
         </div>
         
-        <h2 className="text-center text-3xl font-extrabold text-gau-msa-primary">
-          Join GAUMSA
-        </h2>
-        <p className="text-center text-sm text-gray-600">
-          Become part of the Muslim student community
-        </p>
+        <div>
+          <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-gau-msa-primary">
+            Join GAUMSA
+          </h2>
+          <p className="mt-2 text-center text-xs sm:text-sm text-gray-600">
+            Become part of the Muslim student community
+          </p>
+        </div>
         
-        {/* Success Message */}
         {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-start space-x-2">
+          <div className="bg-green-50 border border-green-200 text-green-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg flex items-start space-x-2">
             <span className="text-green-500 mt-0.5">✅</span>
-            <span className="text-sm">{success}</span>
+            <span className="text-xs sm:text-sm">{success}</span>
           </div>
         )}
         
-        {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-start space-x-2">
-            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <span className="text-sm">{error}</span>
+          <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg flex items-start space-x-2">
+            <AlertCircle className="h-4 sm:h-5 w-4 sm:w-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <span className="text-xs sm:text-sm">{error}</span>
           </div>
         )}
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -113,7 +110,8 @@ const Register: React.FC = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent"
+                  autoComplete="name"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="Ahmed Hassan"
                 />
               </div>
@@ -133,7 +131,9 @@ const Register: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent"
+                  autoComplete="email"
+                  inputMode="email"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -153,7 +153,8 @@ const Register: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent"
+                  autoComplete="new-password"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="•••••••• (min 6 characters)"
                 />
               </div>
@@ -173,7 +174,8 @@ const Register: React.FC = () => {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent"
+                  autoComplete="new-password"
+                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="••••••••"
                 />
               </div>
@@ -184,7 +186,7 @@ const Register: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gau-msa-primary hover:bg-gau-msa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gau-msa-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gau-msa-primary hover:bg-gau-msa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gau-msa-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               {isLoading ? (
                 <Loader2 className="animate-spin h-5 w-5" />
@@ -195,18 +197,12 @@ const Register: React.FC = () => {
           </div>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+        <div className="text-center">
+          <p className="text-xs sm:text-sm text-gray-600">
             Already have an account?{' '}
             <a href="/login" className="font-medium text-gau-msa-primary hover:text-gau-msa-secondary">
               Sign in
             </a>
-          </p>
-        </div>
-
-        <div className="mt-4 text-center">
-          <p className="text-xs text-gray-400">
-            By signing up, you agree to our Terms of Service and Privacy Policy
           </p>
         </div>
       </div>
