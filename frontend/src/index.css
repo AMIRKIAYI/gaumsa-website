@@ -14,37 +14,37 @@ body {
 
 
 
-/* Zoom Animation */
-@keyframes zoomIn {
-  0% {
+/* ==================== RESPONSIVE HERO ZOOM ==================== */
+
+/* Gentle zoom for mobile — keeps image visible */
+@keyframes zoomInMobile {
+  0%, 100% {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
+    transform: scale(1.05);
   }
 }
 
-.animate-zoom {
-  animation: zoomIn 20s ease-in-out infinite;
-}
-
-/* Slow zoom for a more subtle effect */
-@keyframes slowZoom {
-  0% {
+/* Stronger cinematic zoom for tablet and up */
+@keyframes zoomInDesktop {
+  0%, 100% {
     transform: scale(1);
   }
-  100% {
+  50% {
     transform: scale(1.15);
   }
 }
 
-.animate-slow-zoom {
-  animation: slowZoom 30s ease-in-out infinite alternate;
+.animate-zoom {
+  animation: zoomInMobile 25s ease-in-out infinite;
 }
 
+@media (min-width: 768px) {
+  .animate-zoom {
+    animation: zoomInDesktop 25s ease-in-out infinite;
+  }
+}
 /* Smooth zoom with pause */
 @keyframes zoomPause {
   0% {
@@ -167,3 +167,4 @@ body {
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
