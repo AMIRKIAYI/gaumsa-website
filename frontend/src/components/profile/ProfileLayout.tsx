@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  User, LayoutDashboard, MessageCircle, Bot, 
-  Settings, LogOut, ChevronRight, Calendar, BookOpen, Users, Clock
+import {
+  LayoutDashboard,
+  MessageCircle,
+  Bot,
+  Settings,
+  LogOut,
+  Calendar,
+  BookOpen,
+  Users,
+  Clock,
+  BookMarked,
+  Moon,
+  X,
 } from 'lucide-react';
 
 const ProfileLayout: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const profileLinks = [
     { path: '/profile/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -19,117 +30,211 @@ const ProfileLayout: React.FC = () => {
   ];
 
   const mainLinks = [
+    { path: '/quran', label: 'Quran', icon: BookOpen },
+    { path: '/hadiths', label: 'Hadiths', icon: BookMarked },
+    { path: '/athkar', label: 'Athkar', icon: Moon },
+    { path: '/prayer', label: 'Prayer Times', icon: Clock },
     { path: '/activities', label: 'Activities', icon: Calendar },
     { path: '/leadership', label: 'Leadership', icon: Users },
-    { path: '/quran', label: 'Quran', icon: BookOpen },
-    { path: '/prayer', label: 'Prayer Times', icon: Clock },
   ];
+
+  // Listen for the custom event from the navbar
+  useEffect(() => {
+    const handler = () => setIsSidebarOpen(true);
+    window.addEventListener('open-profile-sidebar', handler);
+    return () => window.removeEventListener('open-profile-sidebar', handler);
+  }, []);
+
+  // Lock body scroll when sidebar open
+  useEffect(() => {
+    document.body.style.overflow = isSidebarOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isSidebarOpen]);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
+  const closeSidebar = () => setIsSidebarOpen(false);
+
   return (
-    <div className="min-h-screen bg-gray-50 pt-16">
-      <div className="container-custom py-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar */}
-          <div className={`lg:w-72 flex-shrink-0 ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}>
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden sticky top-24">
-              {/* Profile Header */}
-              <div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary p-6 text-white text-center">
-                <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
-                  {user?.avatar ? (
-                    <img src={user.avatar} alt={user.full_name} className="w-20 h-20 rounded-full" />
-                  ) : (
-                    <span className="text-3xl font-bold">{user?.full_name?.charAt(0) || 'U'}</span>
-                  )}
-                </div>
-                <h3 className="font-semibold text-lg">{user?.full_name}</h3>
-                <p className="text-sm text-gau-msa-gold">{user?.email}</p>
-                <span className="inline-block mt-2 px-3 py-1 bg-white/20 rounded-full text-xs">
-                  {user?.role === 'admin' ? 'Administrator' : 'Student Member'}
-                </span>
-              </div>
+    <div className="min-h-screen bg-gray-50 pt-14 md:pt-[104px]">
+      <div className="container-custom py-4 md:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
+          {/* MOBILE: Sidebar Overlay */}
+          {isSidebarOpen && (
+            <div className="lg:hidden fixed inset-0 z-[60] flex">
+              <div
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={closeSidebar}
+              ></div>
 
-              {/* Profile Navigation */}
-              <div className="p-4">
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">
-                  My Profile
-                </p>
-                <div className="space-y-1">
-                  {profileLinks.map((link) => (
-                    <NavLink
-                      key={link.path}
-                      to={link.path}
-                      className={({ isActive }) =>
-                        `flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                          isActive
-                            ? 'bg-gau-msa-primary text-white'
-                            : 'text-gray-700 hover:bg-gray-50 hover:text-gau-msa-primary'
-                        }`
-                      }
-                    >
-                      <link.icon className="h-5 w-5" />
-                      <span className="font-medium">{link.label}</span>
-                    </NavLink>
-                  ))}
-                </div>
-
-                <div className="border-t border-gray-200 my-4"></div>
-
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">
-                  Main Menu
-                </p>
-                <div className="space-y-1">
-                  {mainLinks.map((link) => (
-                    <NavLink
-                      key={link.path}
-                      to={link.path}
-                      className={({ isActive }) =>
-                        `flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                          isActive
-                            ? 'bg-gau-msa-primary text-white'
-                            : 'text-gray-700 hover:bg-gray-50 hover:text-gau-msa-primary'
-                        }`
-                      }
-                    >
-                      <link.icon className="h-5 w-5" />
-                      <span className="font-medium">{link.label}</span>
-                    </NavLink>
-                  ))}
-                </div>
-
-                <div className="border-t border-gray-200 my-4"></div>
-
+              <div className="relative w-72 max-w-[85vw] bg-white h-full overflow-y-auto shadow-2xl">
                 <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all duration-200"
+                  onClick={closeSidebar}
+                  className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-100 z-10 bg-white/90"
                 >
-                  <LogOut className="h-5 w-5" />
-                  <span className="font-medium">Logout</span>
+                  <X className="h-5 w-5 text-gray-600" />
                 </button>
+
+                <SidebarContent
+                  user={user}
+                  profileLinks={profileLinks}
+                  mainLinks={mainLinks}
+                  onLogout={handleLogout}
+                  onNavigate={closeSidebar}
+                />
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Mobile Toggle */}
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="lg:hidden mb-4 flex items-center space-x-2 px-4 py-2 bg-white rounded-lg shadow-md"
-            >
-              <ChevronRight className={`h-5 w-5 transition-transform ${isSidebarOpen ? 'rotate-90' : ''}`} />
-              <span>Menu</span>
-            </button>
+          {/* DESKTOP: Sidebar */}
+          <aside className="hidden lg:block lg:w-72 flex-shrink-0">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden sticky top-[120px]">
+              <SidebarContent
+                user={user}
+                profileLinks={profileLinks}
+                mainLinks={mainLinks}
+                onLogout={handleLogout}
+              />
+            </div>
+          </aside>
 
-            <div className="bg-white rounded-xl shadow-lg p-6">
+          {/* MAIN CONTENT */}
+          <div className="flex-1 min-w-0">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
               <Outlet />
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// ==================== SIDEBAR CONTENT ====================
+
+interface SidebarContentProps {
+  user: any;
+  profileLinks: { path: string; label: string; icon: any }[];
+  mainLinks: { path: string; label: string; icon: any }[];
+  onLogout: () => void;
+  onNavigate?: () => void;
+}
+
+const SidebarContent: React.FC<SidebarContentProps> = ({
+  user,
+  profileLinks,
+  mainLinks,
+  onLogout,
+  onNavigate,
+}) => {
+  const roleLabel =
+    user?.role === 'admin'
+      ? 'Administrator'
+      : user?.role === 'registrar'
+      ? 'Registrar'
+      : 'Student Member';
+
+  return (
+    <div>
+      <div className="bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary p-5 md:p-6 text-white text-center relative overflow-hidden">
+        <div className="absolute -top-4 -right-4 text-7xl font-arabic opacity-10 select-none">
+          ﷽
+        </div>
+
+        <div className="relative">
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3 overflow-hidden ring-2 ring-white/30">
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.full_name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-2xl md:text-3xl font-bold">
+                {user?.full_name?.charAt(0) || 'U'}
+              </span>
+            )}
+          </div>
+          <h3 className="font-semibold text-base md:text-lg truncate">
+            {user?.full_name}
+          </h3>
+          <p className="text-xs md:text-sm text-gau-msa-gold truncate">
+            {user?.email}
+          </p>
+          <span className="inline-block mt-2 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-[11px] md:text-xs">
+            {roleLabel}
+          </span>
+        </div>
+      </div>
+
+      <div className="p-3 md:p-4">
+        <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 md:mb-3 px-3">
+          My Profile
+        </p>
+        <div className="space-y-1">
+          {profileLinks.map((link) => (
+            <NavLink
+              key={link.path}
+              to={link.path}
+              onClick={onNavigate}
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-sm ${
+                  isActive
+                    ? 'bg-gau-msa-primary text-white shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-gau-msa-primary'
+                }`
+              }
+            >
+              <link.icon className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="font-medium">{link.label}</span>
+            </NavLink>
+          ))}
+        </div>
+
+        <div className="border-t border-gray-100 my-3 md:my-4"></div>
+
+        <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 md:mb-3 px-3">
+          Islamic Content
+        </p>
+        <div className="space-y-1">
+          {mainLinks.map((link) => (
+            <NavLink
+              key={link.path}
+              to={link.path}
+              onClick={onNavigate}
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-sm ${
+                  isActive
+                    ? 'bg-gau-msa-primary text-white shadow-sm'
+                    : 'text-gray-700 hover:bg-gray-50 hover:text-gau-msa-primary'
+                }`
+              }
+            >
+              <link.icon className="h-4 w-4 md:h-5 md:w-5" />
+              <span className="font-medium">{link.label}</span>
+            </NavLink>
+          ))}
+        </div>
+
+        <div className="border-t border-gray-100 my-3 md:my-4"></div>
+
+        <button
+          onClick={onLogout}
+          className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all text-sm"
+        >
+          <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+          <span className="font-medium">Logout</span>
+        </button>
       </div>
     </div>
   );

@@ -27,6 +27,10 @@ import mosqueBg from './assets/images/mosque-bg3.png';
 import gaumsaLogo from './assets/images/gaumsa-logo.png';
 import RamadanPayment from './components/ramadan/RamadanPayment';
 import RamadanPayments from './components/admin/RamadanPayments';
+import HadithCollections from './components/islamic/HadithCollections';
+import Hadiths from './components/islamic/Hadiths';
+import Athkar from './components/islamic/Athkar';
+import Nawawi40 from './components/islamic/Nawawi40';
 
 // ==================== ROUTE GUARDS ====================
 
@@ -455,9 +459,15 @@ function AppContent() {
       <Route path="/activities" element={<AuthenticatedLayout><Activities /></AuthenticatedLayout>} />
       <Route path="/leadership" element={<AuthenticatedLayout><Leadership /></AuthenticatedLayout>} />
       <Route path="/prayer" element={<AuthenticatedLayout><PrayerTimes /></AuthenticatedLayout>} />
+      <Route path="/hadiths/collections" element={<AuthenticatedLayout><HadithCollections /></AuthenticatedLayout>} />
+      <Route path="/hadiths" element={<AuthenticatedLayout><Hadiths /></AuthenticatedLayout>} />
+      <Route path="/athkar" element={<AuthenticatedLayout><Athkar /></AuthenticatedLayout>} />
+      <Route path="/hadiths/collections" element={<AuthenticatedLayout><HadithCollections /></AuthenticatedLayout>} />
+      <Route path="/nawawi40" element={<AuthenticatedLayout><Nawawi40 /></AuthenticatedLayout>} />
 
       <Route path="/quran" element={<QuranPage />} />
       <Route path="/quran/:surahNumber" element={<QuranReaderPage />} />
+      
 
       {/* Redirects */}
       <Route path="/dashboard" element={<Navigate to="/profile/dashboard" replace />} />
