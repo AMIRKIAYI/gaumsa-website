@@ -41,16 +41,18 @@ const Register: React.FC = () => {
 
     try {
       const result = await register(email, password, name);
-      
+
       if (result.success) {
-        setSuccess(result.message || 'Account created successfully! Please wait for verification.');
+        setSuccess(
+          result.message || 'Account created successfully! Redirecting to login...'
+        );
         setName('');
         setEmail('');
         setPassword('');
         setConfirmPassword('');
         setTimeout(() => {
           navigate('/login');
-        }, 3000);
+        }, 2500);
       } else {
         setError(result.error || 'Registration failed. Please try again.');
       }
@@ -60,49 +62,53 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary py-6 md:py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-6 md:space-y-8 bg-white p-5 sm:p-6 md:p-8 rounded-2xl shadow-2xl">
-        {/* Logo */}
-        <div className="flex justify-center">
-          <img 
-            src={gaumsaLogo} 
-            alt="GAUMSA Logo" 
-            className="h-16 sm:h-20 w-auto object-contain"
-          />
-        </div>
-        
-        <div>
-          <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-gau-msa-primary">
-            Join GAUMSA
-          </h2>
-          <p className="mt-2 text-center text-xs sm:text-sm text-gray-600">
-            Become part of the Muslim student community
-          </p>
-        </div>
-        
-        {success && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg flex items-start space-x-2">
-            <span className="text-green-500 mt-0.5">✅</span>
-            <span className="text-xs sm:text-sm">{success}</span>
+    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary p-3 sm:p-4 overflow-hidden">
+      <div className="w-full max-w-md max-h-full flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden">
+        {/* Scrollable content wrapper */}
+        <div className="overflow-y-auto p-5 sm:p-6 md:p-8 space-y-4 sm:space-y-5">
+          {/* Logo */}
+          <div className="flex justify-center flex-shrink-0">
+            <img
+              src={gaumsaLogo}
+              alt="GAUMSA Logo"
+              className="h-14 sm:h-16 md:h-20 w-auto object-contain"
+            />
           </div>
-        )}
-        
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg flex items-start space-x-2">
-            <AlertCircle className="h-4 sm:h-5 w-4 sm:w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <span className="text-xs sm:text-sm">{error}</span>
+
+          <div className="text-center">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-gau-msa-primary">
+              Join GAUMSA
+            </h2>
+            <p className="mt-1 text-xs sm:text-sm text-gray-600">
+              Become part of the Muslim student community
+            </p>
           </div>
-        )}
-        
-        <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+
+          {success && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg flex items-start space-x-2">
+              <span className="text-green-500 mt-0.5 text-sm">✅</span>
+              <span className="text-xs sm:text-sm">{success}</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg flex items-start space-x-2">
+              <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0 mt-0.5" />
+              <span className="text-xs sm:text-sm">{error}</span>
+            </div>
+          )}
+
+          <form className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+              >
                 Full Name *
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <User className="h-4 sm:h-5 w-4 sm:w-5 text-gray-400" />
                 </div>
                 <input
                   id="name"
@@ -111,19 +117,22 @@ const Register: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
-                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+                  className="appearance-none block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="Ahmed Hassan"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+              >
                 Email Address *
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-4 sm:h-5 w-4 sm:w-5 text-gray-400" />
                 </div>
                 <input
                   id="email"
@@ -133,19 +142,22 @@ const Register: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   inputMode="email"
-                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+                  className="appearance-none block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="your.email@example.com"
                 />
               </div>
             </div>
-            
+
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+              >
                 Password *
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-4 sm:h-5 w-4 sm:w-5 text-gray-400" />
                 </div>
                 <input
                   id="password"
@@ -154,19 +166,22 @@ const Register: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
-                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
-                  placeholder="•••••••• (min 6 characters)"
+                  className="appearance-none block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+                  placeholder="•••••••• (min 6 chars)"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="confirm-password"
+                className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
+              >
                 Confirm Password *
               </label>
-              <div className="mt-1 relative">
+              <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-4 sm:h-5 w-4 sm:w-5 text-gray-400" />
                 </div>
                 <input
                   id="confirm-password"
@@ -175,18 +190,16 @@ const Register: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   autoComplete="new-password"
-                  className="appearance-none block w-full pl-10 pr-3 py-3 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+                  className="appearance-none block w-full pl-9 sm:pl-10 pr-3 py-2.5 sm:py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
                   placeholder="••••••••"
                 />
               </div>
             </div>
-          </div>
 
-          <div>
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gau-msa-primary hover:bg-gau-msa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gau-msa-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+              className="w-full flex justify-center py-2.5 sm:py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gau-msa-primary hover:bg-gau-msa-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gau-msa-primary transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               {isLoading ? (
                 <Loader2 className="animate-spin h-5 w-5" />
@@ -194,16 +207,19 @@ const Register: React.FC = () => {
                 'Create Account'
               )}
             </button>
-          </div>
-        </form>
+          </form>
 
-        <div className="text-center">
-          <p className="text-xs sm:text-sm text-gray-600">
-            Already have an account?{' '}
-            <a href="/login" className="font-medium text-gau-msa-primary hover:text-gau-msa-secondary">
-              Sign in
-            </a>
-          </p>
+          <div className="text-center pt-1">
+            <p className="text-xs sm:text-sm text-gray-600">
+              Already have an account?{' '}
+              <a
+                href="/login"
+                className="font-medium text-gau-msa-primary hover:text-gau-msa-secondary"
+              >
+                Sign in
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>
