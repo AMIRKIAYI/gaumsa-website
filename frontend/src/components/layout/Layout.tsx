@@ -12,7 +12,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className="min-h-screen flex flex-col">
       <TopBar />
       <Navbar />
-      <main className="flex-1 mt-[104px]"> {/* 40px (TopBar) + 64px (Navbar) */}
+      <main className="flex-1 pt-14 md:pt-[104px]">
         {children}
       </main>
       <Footer />

@@ -53,15 +53,15 @@ const Logo: React.FC<LogoProps> = ({
       </div>
 
       {showText && variant === 'full' && (
-        <div className="hidden sm:block">
-          <div className={`${sizeClasses.text} font-bold text-gau-msa-primary leading-tight`}>
-            GAUMSA
-          </div>
-          <div className={`${sizeClasses.subtext} text-gray-500 leading-tight`}>
-            Garissa University Muslim Student Association
-          </div>
-        </div>
-      )}
+  <div className="block min-w-0">
+    <div className={`${sizeClasses.text} font-bold text-gau-msa-primary leading-tight`}>
+      GAUMSA
+    </div>
+    <div className={`text-[9px] sm:text-xs text-gray-500 leading-tight truncate`}>
+      Garissa University Muslim Student Association
+    </div>
+  </div>
+)}
     </div>
   );
 };

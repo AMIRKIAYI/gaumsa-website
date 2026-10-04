@@ -25,7 +25,7 @@ const TopBar: React.FC = () => {
   };
 
   return (
-    <div className={`${isNight() ? 'bg-gray-900' : 'bg-gau-msa-primary'} text-white text-xs py-1.5 border-b border-gau-msa-secondary/30 transition-colors duration-500 fixed top-0 left-0 right-0 z-[100]`}>
+     <div className={`${isNight() ? 'bg-gray-900' : 'bg-gau-msa-primary'} text-white text-xs py-1.5 border-b border-gau-msa-secondary/30 transition-colors duration-500 fixed w-full z-50 top-0 hidden md:block`}>
       <div className="container-custom">
         <div className="flex flex-wrap items-center justify-between gap-1">
           <div className="flex items-center space-x-4">

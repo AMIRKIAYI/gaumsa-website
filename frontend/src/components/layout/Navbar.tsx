@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md fixed top-[28px] pt-[10px] pb-[10px] left-0 right-0 z-[90] transition-shadow duration-300">
+    <nav className="bg-white shadow-md fixed top-0 md:top-[28px] left-0 right-0 z-50 transition-shadow duration-300">
       <div className="container-custom">
         <div className="flex justify-between items-center h-16">
           <Logo size="md" className="flex-shrink-0" />
@@ -155,9 +155,7 @@ const Navbar: React.FC = () => {
         {isOpen && (
           <div className="md:hidden bg-white border-t border-gray-100 py-2 animate-fade-in">
             <div className="flex flex-col space-y-1">
-              <div className="px-4 py-2 border-b border-gray-100">
-                <Logo size="sm" />
-              </div>
+              
 
               {navLinks.map((link) => (
                 <button
