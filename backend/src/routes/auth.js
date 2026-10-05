@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
@@ -53,7 +52,8 @@ router.post('/signup', async (req, res) => {
           full_name: full_name,
           email: email,
           role: 'member',
-          is_verified: true
+          is_verified: true,
+          profile_completed: false // ✅ New user — needs to complete profile
         });
 
       if (profileError) {
@@ -109,7 +109,7 @@ router.post('/signin', async (req, res) => {
 
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('id, full_name, email, role, is_verified, reg_no, department, year_of_study, phone, created_at')
+      .select('id, full_name, email, role, is_verified, reg_no, department, year_of_study, phone, profile_completed, created_at')
       .eq('id', data.user.id)
       .maybeSingle();
 
@@ -131,6 +131,7 @@ router.post('/signin', async (req, res) => {
           email: data.user.email,
           role: 'member',
           is_verified: true,
+          profile_completed: false
         })
         .select()
         .maybeSingle();
@@ -154,10 +155,11 @@ router.post('/signin', async (req, res) => {
       department: finalUserData?.department || null,
       year_of_study: finalUserData?.year_of_study || null,
       phone: finalUserData?.phone || null,
+      profile_completed: finalUserData?.profile_completed || false,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(finalUserData?.full_name || 'User')}&background=1a472a&color=fff&size=128`,
     };
 
-    console.log('✅ Signed in:', cleanUser.email, '| Role:', cleanUser.role);
+    console.log('✅ Signed in:', cleanUser.email, '| Role:', cleanUser.role, '| Profile completed:', cleanUser.profile_completed);
 
     res.json({
       success: true,
@@ -178,7 +180,7 @@ router.get('/me', verifyToken, async (req, res) => {
   try {
     const { data: userData } = await supabase
       .from('users')
-      .select('id, full_name, email, role, is_verified, reg_no, department, year_of_study, phone, created_at')
+      .select('id, full_name, email, role, is_verified, reg_no, department, year_of_study, phone, profile_completed, created_at')
       .eq('id', req.user.id)
       .maybeSingle();
 
@@ -192,6 +194,7 @@ router.get('/me', verifyToken, async (req, res) => {
       department: userData?.department || null,
       year_of_study: userData?.year_of_study || null,
       phone: userData?.phone || null,
+      profile_completed: userData?.profile_completed || false,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.full_name || 'User')}&background=1a472a&color=fff&size=128`,
     };
 
@@ -203,6 +206,68 @@ router.get('/me', verifyToken, async (req, res) => {
     res.status(400).json({
       success: false,
       error: error.message
+    });
+  }
+});
+
+// ==================== UPDATE PROFILE (Profile Completion) ====================
+router.put('/update-profile', verifyToken, async (req, res) => {
+  try {
+    const { reg_no, department, year_of_study, phone } = req.body;
+    const userId = req.user.id;
+
+    // Validate required fields
+    if (!reg_no || !department || !year_of_study) {
+      return res.status(400).json({
+        success: false,
+        error: 'Registration number, department, and year of study are required'
+      });
+    }
+
+    // Check if reg_no is already taken by another user
+    const { data: existing } = await supabase
+      .from('users')
+      .select('id')
+      .eq('reg_no', reg_no)
+      .neq('id', userId)
+      .maybeSingle();
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        error: 'This registration number is already in use by another member'
+      });
+    }
+
+    // Update the user profile
+    const { data: updatedUser, error } = await supabase
+      .from('users')
+      .update({
+        reg_no,
+        department,
+        year_of_study,
+        phone: phone || null,
+        profile_completed: true,
+        updated_at: new Date(),
+      })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    console.log('✅ Profile completed for user:', updatedUser.email);
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(400).json({
+      success: false,
+      error: error.message || 'Failed to update profile',
     });
   }
 });

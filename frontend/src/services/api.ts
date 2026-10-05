@@ -27,6 +27,27 @@ export const api = {
     return response.json();
   },
 
+  // ✅ NEW: Update profile (for the completion modal)
+  updateProfile: async (
+    token: string,
+    data: {
+      reg_no: string;
+      department: string;
+      year_of_study: string;
+      phone?: string;
+    }
+  ) => {
+    const response = await fetch(`${API_URL}/auth/update-profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
   // ==================== ACTIVITIES ====================
   getActivities: async (category?: string, status?: string) => {
     const params = new URLSearchParams();
@@ -41,7 +62,7 @@ export const api = {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
     });
     return response.json();
@@ -80,7 +101,15 @@ export const api = {
   },
 
   // ==================== ADMIN/REGISTRAR ====================
-  getUsers: async (token: string, params?: { search?: string; role?: string; verified?: string; department?: string }) => {
+  getUsers: async (
+    token: string,
+    params?: {
+      search?: string;
+      role?: string;
+      verified?: string;
+      department?: string;
+    }
+  ) => {
     const query = new URLSearchParams(params as any).toString();
     const response = await fetch(`${API_URL}/admin/users?${query}`, {
       headers: { 'Authorization': `Bearer ${token}` },
@@ -124,27 +153,39 @@ export const api = {
     return response.json();
   },
 
-  getRegistrationRequests: async (token: string, params?: { status?: string; search?: string }) => {
+  getRegistrationRequests: async (
+    token: string,
+    params?: { status?: string; search?: string }
+  ) => {
     const query = new URLSearchParams(params as any).toString();
-    const response = await fetch(`${API_URL}/admin/registration-requests?${query}`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `${API_URL}/admin/registration-requests?${query}`,
+      {
+        headers: { 'Authorization': `Bearer ${token}` },
+      }
+    );
     return response.json();
   },
 
   approveRegistration: async (token: string, requestId: string) => {
-    const response = await fetch(`${API_URL}/admin/registration-requests/${requestId}/approve`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `${API_URL}/admin/registration-requests/${requestId}/approve`,
+      {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      }
+    );
     return response.json();
   },
 
   rejectRegistration: async (token: string, requestId: string) => {
-    const response = await fetch(`${API_URL}/admin/registration-requests/${requestId}/reject`, {
-      method: 'PATCH',
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
+    const response = await fetch(
+      `${API_URL}/admin/registration-requests/${requestId}/reject`,
+      {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` },
+      }
+    );
     return response.json();
   },
 
@@ -156,64 +197,78 @@ export const api = {
   },
 
   // ==================== RAMADAN PAYMENTS ====================
-initiateRamadanPayment: async (data: { reg_no: string; full_name: string; phone: string }) => {
-  const response = await fetch(`${API_URL}/ramadan/payments/initiate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  return response.json();
-},
+  initiateRamadanPayment: async (data: {
+    reg_no: string;
+    full_name: string;
+    phone: string;
+  }) => {
+    const response = await fetch(`${API_URL}/ramadan/payments/initiate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
 
-checkRamadanPaymentStatus: async (checkoutId: string) => {
-  const response = await fetch(`${API_URL}/ramadan/payments/status/${checkoutId}`);
-  return response.json();
-},
+  checkRamadanPaymentStatus: async (checkoutId: string) => {
+    const response = await fetch(
+      `${API_URL}/ramadan/payments/status/${checkoutId}`
+    );
+    return response.json();
+  },
 
-getMyRamadanPayments: async (token: string) => {
-  const response = await fetch(`${API_URL}/ramadan/payments/me`, {
-    headers: { 'Authorization': `Bearer ${token}` },
-  });
-  return response.json();
-},
+  getMyRamadanPayments: async (token: string) => {
+    const response = await fetch(`${API_URL}/ramadan/payments/me`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    return response.json();
+  },
 
-getRamadanPayments: async (token: string, params?: { status?: string; search?: string }) => {
-  const query = new URLSearchParams();
-  
-  if (params?.status && params.status !== 'all') {
-    query.append('status', params.status);
-  }
-  if (params?.search && params.search.trim()) {
-    query.append('search', params.search.trim());
-  }
-  
-  const queryString = query.toString();
-  const url = `${API_URL}/ramadan/payments${queryString ? `?${queryString}` : ''}`;
-  
-  console.log('🔍 API call:', url);   // Debug log
-  
-  const response = await fetch(url, {
-    headers: { 'Authorization': `Bearer ${token}` },
-  });
-  return response.json();
-},
+  getRamadanPayments: async (
+    token: string,
+    params?: { status?: string; search?: string }
+  ) => {
+    const query = new URLSearchParams();
 
-getRamadanStats: async (token: string) => {
-  const response = await fetch(`${API_URL}/ramadan/payments/stats`, {
-    headers: { 'Authorization': `Bearer ${token}` },
-  });
-  return response.json();
-},
+    if (params?.status && params.status !== 'all') {
+      query.append('status', params.status);
+    }
+    if (params?.search && params.search.trim()) {
+      query.append('search', params.search.trim());
+    }
 
-verifyRamadanPayment: async (token: string, paymentId: string, data: { status: string; notes?: string }) => {
-  const response = await fetch(`${API_URL}/ramadan/payments/${paymentId}/verify`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
-  return response.json();
-},
+    const queryString = query.toString();
+    const url = `${API_URL}/ramadan/payments${queryString ? `?${queryString}` : ''}`;
+
+    const response = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    return response.json();
+  },
+
+  getRamadanStats: async (token: string) => {
+    const response = await fetch(`${API_URL}/ramadan/payments/stats`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    return response.json();
+  },
+
+  verifyRamadanPayment: async (
+    token: string,
+    paymentId: string,
+    data: { status: string; notes?: string }
+  ) => {
+    const response = await fetch(
+      `${API_URL}/ramadan/payments/${paymentId}/verify`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    return response.json();
+  },
 };

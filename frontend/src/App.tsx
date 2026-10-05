@@ -31,6 +31,7 @@ import HadithCollections from './components/islamic/HadithCollections';
 import Hadiths from './components/islamic/Hadiths';
 import Athkar from './components/islamic/Athkar';
 import Nawawi40 from './components/islamic/Nawawi40';
+import ProfileCompletionModal from './components/profile/ProfileCompletionModal';
 
 // ==================== ROUTE GUARDS ====================
 
@@ -81,8 +82,6 @@ const AuthenticatedLayout: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// ✅ NEW: A wrapper that adds consistent top padding for standalone pages
-// Use this for pages rendered outside ProfileLayout (Hadiths, Athkar, Quran, etc.)
 const PageContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="container-custom pt-4 md:pt-6 pb-8 md:pb-12">
@@ -402,6 +401,16 @@ const Home = () => {
 
 function AppContent() {
   const { user, isInitialized } = useAuth();
+  const [showCompletion, setShowCompletion] = React.useState(false);
+
+  // Show the modal when user logs in but hasn't completed profile
+  React.useEffect(() => {
+    if (user && user.role === 'member' && !user.profile_completed) {
+      setShowCompletion(true);
+    } else {
+      setShowCompletion(false);
+    }
+  }, [user]);
 
   if (!isInitialized) {
     return (
@@ -415,123 +424,130 @@ function AppContent() {
   }
 
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
-      <Route path="/register" element={!user ? <Register /> : <Navigate to="/" replace />} />
+    <>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
+        <Route path="/register" element={!user ? <Register /> : <Navigate to="/" replace />} />
 
-      {/* Home */}
-      <Route path="/" element={<AuthenticatedLayout><Home /></AuthenticatedLayout>} />
+        {/* Home */}
+        <Route path="/" element={<AuthenticatedLayout><Home /></AuthenticatedLayout>} />
 
-      {/* Profile Routes (uses ProfileLayout with its own top padding) */}
-      <Route path="/profile" element={<AuthenticatedLayout><ProfileLayout /></AuthenticatedLayout>}>
-        <Route index element={<Navigate to="/profile/dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="chat" element={<ChatRoom />} />
-        <Route path="ai" element={<AIChatBot />} />
-        <Route path="settings" element={<Settings />} />
-      </Route>
+        {/* Profile Routes */}
+        <Route path="/profile" element={<AuthenticatedLayout><ProfileLayout /></AuthenticatedLayout>}>
+          <Route index element={<Navigate to="/profile/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="chat" element={<ChatRoom />} />
+          <Route path="ai" element={<AIChatBot />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
 
-      {/* Ramadan */}
-      <Route path="/ramadan" element={
-        <AuthenticatedLayout>
-          <PageContainer>
-            <RamadanPayment />
-          </PageContainer>
-        </AuthenticatedLayout>
-      } />
-
-      {/* Registrar */}
-      <Route path="/registrar" element={
-        <RegistrarRoute>
-          <Layout>
+        {/* Ramadan */}
+        <Route path="/ramadan" element={
+          <AuthenticatedLayout>
             <PageContainer>
-              <RegistrarDashboard />
+              <RamadanPayment />
             </PageContainer>
-          </Layout>
-        </RegistrarRoute>
-      } />
+          </AuthenticatedLayout>
+        } />
 
-      {/* Admin Ramadan */}
-      <Route path="/admin/ramadan" element={
-        <RegistrarRoute>
-          <Layout>
+        {/* Registrar */}
+        <Route path="/registrar" element={
+          <RegistrarRoute>
+            <Layout>
+              <PageContainer>
+                <RegistrarDashboard />
+              </PageContainer>
+            </Layout>
+          </RegistrarRoute>
+        } />
+
+        {/* Admin Ramadan */}
+        <Route path="/admin/ramadan" element={
+          <RegistrarRoute>
+            <Layout>
+              <PageContainer>
+                <RamadanPayments />
+              </PageContainer>
+            </Layout>
+          </RegistrarRoute>
+        } />
+
+        {/* Islamic & Community Pages */}
+        <Route path="/activities" element={
+          <AuthenticatedLayout>
             <PageContainer>
-              <RamadanPayments />
+              <Activities />
             </PageContainer>
-          </Layout>
-        </RegistrarRoute>
-      } />
+          </AuthenticatedLayout>
+        } />
 
-      {/* Islamic & Community Pages — all use PageContainer */}
-      <Route path="/activities" element={
-        <AuthenticatedLayout>
-          <PageContainer>
-            <Activities />
-          </PageContainer>
-        </AuthenticatedLayout>
-      } />
+        <Route path="/leadership" element={
+          <AuthenticatedLayout>
+            <PageContainer>
+              <Leadership />
+            </PageContainer>
+          </AuthenticatedLayout>
+        } />
 
-      <Route path="/leadership" element={
-        <AuthenticatedLayout>
-          <PageContainer>
-            <Leadership />
-          </PageContainer>
-        </AuthenticatedLayout>
-      } />
+        <Route path="/prayer" element={
+          <AuthenticatedLayout>
+            <PageContainer>
+              <PrayerTimes />
+            </PageContainer>
+          </AuthenticatedLayout>
+        } />
 
-      <Route path="/prayer" element={
-        <AuthenticatedLayout>
-          <PageContainer>
-            <PrayerTimes />
-          </PageContainer>
-        </AuthenticatedLayout>
-      } />
+        <Route path="/hadiths" element={
+          <AuthenticatedLayout>
+            <PageContainer>
+              <Hadiths />
+            </PageContainer>
+          </AuthenticatedLayout>
+        } />
 
-      <Route path="/hadiths" element={
-        <AuthenticatedLayout>
-          <PageContainer>
-            <Hadiths />
-          </PageContainer>
-        </AuthenticatedLayout>
-      } />
+        <Route path="/hadiths/collections" element={
+          <AuthenticatedLayout>
+            <PageContainer>
+              <HadithCollections />
+            </PageContainer>
+          </AuthenticatedLayout>
+        } />
 
-      <Route path="/hadiths/collections" element={
-        <AuthenticatedLayout>
-          <PageContainer>
-            <HadithCollections />
-          </PageContainer>
-        </AuthenticatedLayout>
-      } />
+        <Route path="/athkar" element={
+          <AuthenticatedLayout>
+            <PageContainer>
+              <Athkar />
+            </PageContainer>
+          </AuthenticatedLayout>
+        } />
 
-      <Route path="/athkar" element={
-        <AuthenticatedLayout>
-          <PageContainer>
-            <Athkar />
-          </PageContainer>
-        </AuthenticatedLayout>
-      } />
+        <Route path="/nawawi40" element={
+          <AuthenticatedLayout>
+            <PageContainer>
+              <Nawawi40 />
+            </PageContainer>
+          </AuthenticatedLayout>
+        } />
 
-      <Route path="/nawawi40" element={
-        <AuthenticatedLayout>
-          <PageContainer>
-            <Nawawi40 />
-          </PageContainer>
-        </AuthenticatedLayout>
-      } />
+        {/* Quran */}
+        <Route path="/quran" element={<QuranPage />} />
+        <Route path="/quran/:surahNumber" element={<QuranReaderPage />} />
 
-      {/* Quran */}
-      <Route path="/quran" element={<QuranPage />} />
-      <Route path="/quran/:surahNumber" element={<QuranReaderPage />} />
+        {/* Redirects */}
+        <Route path="/dashboard" element={<Navigate to="/profile/dashboard" replace />} />
+        <Route path="/chat" element={<Navigate to="/profile/chat" replace />} />
+        <Route path="/ai" element={<Navigate to="/profile/ai" replace />} />
 
-      {/* Redirects */}
-      <Route path="/dashboard" element={<Navigate to="/profile/dashboard" replace />} />
-      <Route path="/chat" element={<Navigate to="/profile/chat" replace />} />
-      <Route path="/ai" element={<Navigate to="/profile/ai" replace />} />
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
+      </Routes>
 
-      {/* Catch-all */}
-      <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
-    </Routes>
+      {/* Profile completion modal — shows for new members only */}
+      {showCompletion && (
+        <ProfileCompletionModal onComplete={() => setShowCompletion(false)} />
+      )}
+    </>
   );
 }
 

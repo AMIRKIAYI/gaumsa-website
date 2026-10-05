@@ -11,6 +11,7 @@ export interface User {
   phone?: string;
   department?: string;
   year_of_study?: string;
+  profile_completed?: boolean; // ✅ Add this
   avatar?: string;
 }
 
@@ -22,6 +23,7 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isInitialized: boolean;   // ← NEW: true once localStorage has been checked
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -117,9 +119,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, isLoading, isInitialized }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ 
+  user, 
+  token, 
+  login, 
+  register, 
+  logout, 
+  isLoading, 
+  isInitialized,
+  setUser, // ✅ Add this
+}}>
+  {children}
+</AuthContext.Provider>
   );
 };
 
