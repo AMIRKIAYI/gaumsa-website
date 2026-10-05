@@ -8,7 +8,7 @@ interface PageHeaderProps {
   showBack?: boolean;
   showHome?: boolean;
   showMenu?: boolean;
-  backTo?: string; // ✅ NEW: explicit destination
+  backTo?: string;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({
@@ -23,10 +23,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({
 
   const handleBack = () => {
     if (backTo) {
-      // ✅ Go to a specific page instead of history
       navigate(backTo);
     } else {
-      // ✅ Fallback: go back in history
       navigate(-1);
     }
   };
@@ -36,11 +34,11 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-3 mb-4 md:mb-6 pb-3 md:pb-4 border-b border-gray-100">
+    <div className="flex items-center gap-3 mb-4 md:mb-6 pb-3 md:pb-4 border-b border-gray-100 dark:border-gray-700 transition-colors">
       {showBack && (
         <button
           onClick={handleBack}
-          className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors flex-shrink-0"
+          className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 transition-colors flex-shrink-0"
           aria-label="Go back"
         >
           <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
@@ -48,12 +46,12 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       )}
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center space-x-2 text-[10px] md:text-xs text-gray-400 mb-0.5">
+        <div className="flex items-center space-x-2 text-[10px] md:text-xs text-gray-400 dark:text-gray-500 mb-0.5">
           {showHome && (
             <>
               <button
                 onClick={() => navigate('/')}
-                className="hover:text-gau-msa-primary transition-colors flex items-center space-x-1"
+                className="hover:text-gau-msa-primary dark:hover:text-gau-msa-gold transition-colors flex items-center space-x-1"
               >
                 <Home className="h-3 w-3" />
                 <span>Home</span>
@@ -61,13 +59,13 @@ const PageHeader: React.FC<PageHeaderProps> = ({
               <span>/</span>
             </>
           )}
-          <span className="text-gray-500">{title}</span>
+          <span className="text-gray-500 dark:text-gray-400">{title}</span>
         </div>
-        <h1 className="text-lg md:text-2xl font-bold text-gau-msa-primary truncate">
+        <h1 className="text-lg md:text-2xl font-bold text-gau-msa-primary dark:text-gau-msa-gold truncate">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-xs md:text-sm text-gray-500 mt-0.5 truncate">
+          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-0.5 truncate">
             {subtitle}
           </p>
         )}
@@ -76,7 +74,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       {showMenu && (
         <button
           onClick={openProfileSidebar}
-          className="lg:hidden flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-gau-msa-primary text-white text-xs font-semibold active:scale-95 hover:bg-gau-msa-secondary transition-all flex-shrink-0"
+          className="lg:hidden flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-gau-msa-primary dark:bg-gau-msa-primary text-white text-xs font-semibold active:scale-95 hover:bg-gau-msa-secondary transition-all flex-shrink-0"
           aria-label="Open menu"
         >
           <Menu className="h-4 w-4" />

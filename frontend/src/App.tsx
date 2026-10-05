@@ -32,6 +32,7 @@ import Hadiths from './components/islamic/Hadiths';
 import Athkar from './components/islamic/Athkar';
 import Nawawi40 from './components/islamic/Nawawi40';
 import ProfileCompletionModal from './components/profile/ProfileCompletionModal';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 // ==================== ROUTE GUARDS ====================
 
@@ -405,12 +406,29 @@ function AppContent() {
 
   // Show the modal when user logs in but hasn't completed profile
   React.useEffect(() => {
-    if (user && user.role === 'member' && !user.profile_completed) {
-      setShowCompletion(true);
-    } else {
-      setShowCompletion(false);
-    }
-  }, [user]);
+  if (!user) {
+    setShowCompletion(false);
+    return;
+  }
+
+  // Only members need to complete their profile
+  if (user.role !== 'member') {
+    setShowCompletion(false);
+    return;
+  }
+
+  // ✅ Check if any required field is missing
+  const isProfileIncomplete =
+    !user.profile_completed ||
+    !user.reg_no ||
+    !user.reg_no.trim() ||
+    !user.department ||
+    !user.department.trim() ||
+    !user.year_of_study ||
+    !user.year_of_study.trim();
+
+  setShowCompletion(isProfileIncomplete);
+}, [user]);
 
   if (!isInitialized) {
     return (
@@ -555,11 +573,13 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 

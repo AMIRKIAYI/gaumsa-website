@@ -74,12 +74,12 @@ const Dashboard: React.FC = () => {
       path: '/prayer',
     },
     {
-  icon: BookMarked,
-  label: "Nawawi's 40",
-  description: 'Listen to 40 Hadith',
-  color: 'from-amber-600 to-amber-800',
-  path: '/nawawi40',
-},
+      icon: BookMarked,
+      label: "Nawawi's 40",
+      description: 'Listen to 40 Hadith',
+      color: 'from-amber-600 to-amber-800',
+      path: '/nawawi40',
+    },
   ];
 
   // ==================== COMMUNITY ====================
@@ -182,15 +182,11 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-5 md:space-y-8">
-      {/* ==================== PAGE HEADER WITH BACK BUTTON ==================== */}
-      <PageHeader
-        title="Dashboard"
-        subtitle="Your Islamic learning hub"
-      />
+      {/* PAGE HEADER */}
+      <PageHeader title="Dashboard" subtitle="Your Islamic learning hub" />
 
-      {/* ==================== WELCOME BANNER ==================== */}
+      {/* WELCOME BANNER */}
       <div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary rounded-2xl p-4 md:p-6 text-white shadow-lg overflow-hidden relative">
-        {/* Decorative pattern */}
         <div className="absolute -top-4 -right-4 text-8xl font-arabic opacity-10 select-none pointer-events-none">
           ﷽
         </div>
@@ -198,11 +194,7 @@ const Dashboard: React.FC = () => {
         <div className="relative flex items-center space-x-3 md:space-x-4">
           <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/20 flex items-center justify-center text-lg md:text-2xl flex-shrink-0 overflow-hidden ring-2 ring-white/30">
             {user?.avatar ? (
-              <img
-                src={user.avatar}
-                alt=""
-                className="w-full h-full object-cover"
-              />
+              <img src={user.avatar} alt="" className="w-full h-full object-cover" />
             ) : (
               user?.full_name?.charAt(0) || 'U'
             )}
@@ -218,7 +210,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* ==================== CONTINUE READING ==================== */}
+      {/* CONTINUE READING */}
       {lastRead && showReminder && (
         <div className="relative bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-2xl p-4 text-white shadow-lg overflow-hidden">
           <div className="absolute -top-6 -right-6 text-7xl font-arabic opacity-10 select-none pointer-events-none">
@@ -271,13 +263,13 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* ==================== ISLAMIC CONTENT ==================== */}
+      {/* ISLAMIC CONTENT */}
       <div>
         <div className="flex items-center justify-between mb-3 md:mb-4">
-          <h3 className="text-base md:text-lg font-semibold text-gau-msa-primary flex items-center space-x-2">
+          <h3 className="text-base md:text-lg font-semibold text-gau-msa-primary dark:text-gau-msa-gold flex items-center space-x-2">
             <span>Islamic Content</span>
           </h3>
-          <span className="text-[10px] md:text-xs text-gray-400">
+          <span className="text-[10px] md:text-xs text-gray-400 dark:text-gray-500">
             Tap to explore
           </span>
         </div>
@@ -286,12 +278,9 @@ const Dashboard: React.FC = () => {
             <button
               key={i}
               onClick={() => handleNavigation(feature.path)}
-              className="group relative bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-left"
+              className="group relative bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 text-left"
             >
-              {/* Colored gradient strip */}
-              <div
-                className={`h-1 w-full bg-gradient-to-r ${feature.color}`}
-              ></div>
+              <div className={`h-1 w-full bg-gradient-to-r ${feature.color}`}></div>
 
               <div className="p-4 md:p-5">
                 <div
@@ -299,26 +288,25 @@ const Dashboard: React.FC = () => {
                 >
                   <feature.icon className="h-5 w-5 md:h-7 md:w-7 text-white" />
                 </div>
-                <p className="font-bold text-gray-800 text-sm md:text-base mb-0.5">
+                <p className="font-bold text-gray-800 dark:text-gray-100 text-sm md:text-base mb-0.5">
                   {feature.label}
                 </p>
-                <p className="text-[11px] md:text-xs text-gray-500">
+                <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400">
                   {feature.description}
                 </p>
               </div>
 
-              {/* Arrow indicator */}
               <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               </div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* ==================== COMMUNITY ==================== */}
+      {/* COMMUNITY */}
       <div>
-        <h3 className="text-base md:text-lg font-semibold text-gau-msa-primary mb-3 md:mb-4">
+        <h3 className="text-base md:text-lg font-semibold text-gau-msa-primary dark:text-gau-msa-gold mb-3 md:mb-4">
           Community
         </h3>
         <div className="grid grid-cols-2 gap-3 md:gap-4">
@@ -326,17 +314,17 @@ const Dashboard: React.FC = () => {
             <button
               key={i}
               onClick={() => handleNavigation(feature.path)}
-              className="group bg-white rounded-2xl border border-gray-100 p-4 md:p-5 text-left hover:shadow-lg hover:border-gau-msa-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+              className="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-4 md:p-5 text-left hover:shadow-lg hover:border-gau-msa-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
             >
               <div
                 className={`w-10 h-10 md:w-12 md:h-12 ${feature.color} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 shadow-md`}
               >
                 <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
-              <p className="font-semibold text-gray-800 text-sm md:text-base">
+              <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm md:text-base">
                 {feature.label}
               </p>
-              <p className="text-[11px] md:text-xs text-gray-500 mt-0.5">
+              <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                 {feature.description}
               </p>
             </button>
@@ -344,9 +332,9 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* ==================== MY ACCOUNT ==================== */}
+      {/* MY ACCOUNT */}
       <div>
-        <h3 className="text-base md:text-lg font-semibold text-gau-msa-primary mb-3 md:mb-4">
+        <h3 className="text-base md:text-lg font-semibold text-gau-msa-primary dark:text-gau-msa-gold mb-3 md:mb-4">
           My Account
         </h3>
         <div className="grid grid-cols-2 gap-3 md:gap-4">
@@ -354,17 +342,17 @@ const Dashboard: React.FC = () => {
             <button
               key={i}
               onClick={() => handleNavigation(feature.path)}
-              className="group bg-white rounded-2xl border border-gray-100 p-4 md:p-5 text-left hover:shadow-lg hover:border-gau-msa-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+              className="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-4 md:p-5 text-left hover:shadow-lg hover:border-gau-msa-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
             >
               <div
                 className={`w-10 h-10 md:w-12 md:h-12 ${feature.color} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 shadow-md`}
               >
                 <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
-              <p className="font-semibold text-gray-800 text-sm md:text-base">
+              <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm md:text-base">
                 {feature.label}
               </p>
-              <p className="text-[11px] md:text-xs text-gray-500 mt-0.5">
+              <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                 {feature.description}
               </p>
             </button>
@@ -372,10 +360,10 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* ==================== ADMIN TOOLS (conditional) ==================== */}
+      {/* ADMIN TOOLS */}
       {adminFeatures.length > 0 && (
         <div>
-          <h3 className="text-base md:text-lg font-semibold text-red-600 mb-3 md:mb-4 flex items-center space-x-2">
+          <h3 className="text-base md:text-lg font-semibold text-red-600 dark:text-red-400 mb-3 md:mb-4 flex items-center space-x-2">
             <Shield className="h-4 w-4 md:h-5 md:w-5" />
             <span>Admin Tools</span>
           </h3>
@@ -384,17 +372,17 @@ const Dashboard: React.FC = () => {
               <button
                 key={i}
                 onClick={() => handleNavigation(feature.path)}
-                className="group bg-white rounded-2xl border border-red-100 p-4 md:p-5 text-left hover:shadow-lg hover:border-red-400 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+                className="group bg-white dark:bg-gray-800 rounded-2xl border border-red-100 dark:border-red-900/40 p-4 md:p-5 text-left hover:shadow-lg hover:border-red-400 dark:hover:border-red-500 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
               >
                 <div
                   className={`w-10 h-10 md:w-12 md:h-12 ${feature.color} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 shadow-md`}
                 >
                   <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
                 </div>
-                <p className="font-semibold text-gray-800 text-sm md:text-base">
+                <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm md:text-base">
                   {feature.label}
                 </p>
-                <p className="text-[11px] md:text-xs text-gray-500 mt-0.5">
+                <p className="text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                   {feature.description}
                 </p>
               </button>
@@ -403,25 +391,25 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* ==================== RECENT ACTIVITY ==================== */}
+      {/* RECENT ACTIVITY */}
       <div>
-        <h3 className="text-base md:text-lg font-semibold text-gau-msa-primary mb-3 md:mb-4">
+        <h3 className="text-base md:text-lg font-semibold text-gau-msa-primary dark:text-gau-msa-gold mb-3 md:mb-4">
           Recent Activity
         </h3>
-        <div className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden transition-colors">
           {recentActivities.map((activity, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 p-3 md:p-4 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 p-3 md:p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             >
-              <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gau-msa-primary/10 flex items-center justify-center flex-shrink-0">
-                <activity.icon className="h-4 w-4 md:h-5 md:w-5 text-gau-msa-primary" />
+              <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-gau-msa-primary/10 dark:bg-gau-msa-primary/20 flex items-center justify-center flex-shrink-0">
+                <activity.icon className="h-4 w-4 md:h-5 md:w-5 text-gau-msa-primary dark:text-gau-msa-gold" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs md:text-sm font-medium text-gray-800 truncate">
+                <p className="text-xs md:text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                   {activity.title}
                 </p>
-                <p className="text-[10px] md:text-xs text-gray-500">
+                <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400">
                   {activity.time}
                 </p>
               </div>

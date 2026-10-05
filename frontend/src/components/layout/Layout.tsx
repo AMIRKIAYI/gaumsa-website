@@ -36,10 +36,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
       <TopBar />
       <Navbar />
-      <main className="flex-1 pt-14 md:pt-[104px]">
+      <main className="flex-1 pt-14 md:pt-[104px] bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
         {children}
       </main>
       <Footer />
@@ -54,7 +54,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           ></div>
 
           {/* Sidebar Panel */}
-          <div className="relative w-80 max-w-[85vw] bg-white h-full overflow-hidden shadow-2xl">
+          <div className="relative w-80 max-w-[85vw] bg-white dark:bg-gray-800 h-full overflow-hidden shadow-2xl">
             <AppSidebar onClose={closeSidebar} />
           </div>
         </div>

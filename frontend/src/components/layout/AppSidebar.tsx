@@ -55,19 +55,19 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
       : 'Student Member';
 
   return (
-    <div className="flex flex-col bg-white relative h-full">
+    <div className="flex flex-col bg-white dark:bg-gray-800 relative h-full transition-colors">
       {/* Close button (mobile only) */}
       {onClose && (
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-100 z-10 bg-white/90"
+          className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 z-10 bg-white/90 dark:bg-gray-800/90"
           aria-label="Close menu"
         >
-          <X className="h-5 w-5 text-gray-600" />
+          <X className="h-5 w-5 text-gray-600 dark:text-gray-300" />
         </button>
       )}
 
-      {/* Profile Header */}
+      {/* Profile Header — gradient stays the same (already dark-friendly) */}
       <div className="bg-gradient-to-br from-gau-msa-primary to-gau-msa-secondary p-5 md:p-6 text-white text-center relative overflow-hidden">
         <div className="absolute -top-4 -right-4 text-7xl font-arabic opacity-10 select-none pointer-events-none">
           ﷽
@@ -101,7 +101,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
       {/* Navigation — scrollable */}
       <div className="flex-1 overflow-y-auto min-h-0 p-3 md:p-4">
         {/* My Profile */}
-        <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 md:mb-3 px-3">
+        <p className="text-[10px] md:text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 md:mb-3 px-3">
           My Profile
         </p>
         <div className="space-y-1">
@@ -114,7 +114,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
                 `flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-sm ${
                   isActive
                     ? 'bg-gau-msa-primary text-white shadow-sm'
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-gau-msa-primary'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gau-msa-primary dark:hover:text-gau-msa-gold'
                 }`
               }
             >
@@ -124,10 +124,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
           ))}
         </div>
 
-        <div className="border-t border-gray-100 my-3 md:my-4"></div>
+        <div className="border-t border-gray-100 dark:border-gray-700 my-3 md:my-4"></div>
 
         {/* Islamic Content */}
-        <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 md:mb-3 px-3">
+        <p className="text-[10px] md:text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 md:mb-3 px-3">
           Islamic Content
         </p>
         <div className="space-y-1">
@@ -140,7 +140,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
                 `flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all text-sm ${
                   isActive
                     ? 'bg-gau-msa-primary text-white shadow-sm'
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-gau-msa-primary'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gau-msa-primary dark:hover:text-gau-msa-gold'
                 }`
               }
             >
@@ -150,12 +150,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
           ))}
         </div>
 
-        <div className="border-t border-gray-100 my-3 md:my-4"></div>
+        <div className="border-t border-gray-100 dark:border-gray-700 my-3 md:my-4"></div>
 
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all text-sm"
+          className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-sm"
         >
           <LogOut className="h-4 w-4 md:h-5 md:w-5" />
           <span className="font-medium">Logout</span>
