@@ -92,9 +92,10 @@ const SurahList: React.FC<SurahListProps> = ({ onSelectSurah }) => {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="The Holy Quran"
-        subtitle={`${surahs.length} Surahs • Read, listen, and reflect`}
-      />
+  title="The Holy Quran"
+  subtitle={`${surahs.length} Surahs • Read, listen, and reflect`}
+  backTo="/profile/dashboard"
+/>
 
       {/* Continue Reading Reminder */}
       {lastRead && showReminder && (

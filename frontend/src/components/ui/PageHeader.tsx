@@ -8,6 +8,7 @@ interface PageHeaderProps {
   showBack?: boolean;
   showHome?: boolean;
   showMenu?: boolean;
+  backTo?: string; // ✅ NEW: explicit destination
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({
@@ -16,20 +17,29 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   showBack = true,
   showHome = true,
   showMenu = true,
+  backTo,
 }) => {
   const navigate = useNavigate();
 
-  // Opens the ProfileLayout sidebar via custom event
+  const handleBack = () => {
+    if (backTo) {
+      // ✅ Go to a specific page instead of history
+      navigate(backTo);
+    } else {
+      // ✅ Fallback: go back in history
+      navigate(-1);
+    }
+  };
+
   const openProfileSidebar = () => {
     window.dispatchEvent(new CustomEvent('open-profile-sidebar'));
   };
 
   return (
     <div className="flex items-center gap-3 mb-4 md:mb-6 pb-3 md:pb-4 border-b border-gray-100">
-      {/* Back button */}
       {showBack && (
         <button
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors flex-shrink-0"
           aria-label="Go back"
         >
@@ -37,7 +47,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         </button>
       )}
 
-      {/* Title + breadcrumb */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2 text-[10px] md:text-xs text-gray-400 mb-0.5">
           {showHome && (
@@ -64,7 +73,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         )}
       </div>
 
-      {/* Menu button — opens the ProfileLayout sidebar */}
       {showMenu && (
         <button
           onClick={openProfileSidebar}
