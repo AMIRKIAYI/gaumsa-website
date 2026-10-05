@@ -55,8 +55,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
       : 'Student Member';
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      {/* Close button */}
+    <div className="flex flex-col bg-white relative h-full">
+      {/* Close button (mobile only) */}
       {onClose && (
         <button
           onClick={onClose}
@@ -98,8 +98,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex-1 overflow-y-auto p-3 md:p-4">
+      {/* Navigation — scrollable */}
+      <div className="flex-1 overflow-y-auto min-h-0 p-3 md:p-4">
+        {/* My Profile */}
         <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 md:mb-3 px-3">
           My Profile
         </p>
@@ -125,6 +126,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
 
         <div className="border-t border-gray-100 my-3 md:my-4"></div>
 
+        {/* Islamic Content */}
         <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 md:mb-3 px-3">
           Islamic Content
         </p>
@@ -150,6 +152,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ onClose }) => {
 
         <div className="border-t border-gray-100 my-3 md:my-4"></div>
 
+        {/* Logout */}
         <button
           onClick={handleLogout}
           className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all text-sm"
