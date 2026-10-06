@@ -74,7 +74,7 @@ const ChatRoom: React.FC = () => {
         subtitle="Connect with fellow Muslim students"
       />
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-[calc(100vh-280px)] md:h-[600px] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden h-[calc(100vh-280px)] md:h-[600px] flex flex-col transition-colors">
         {/* Chat Header */}
         <div className="bg-gau-msa-primary text-white p-3 md:p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -102,11 +102,11 @@ const ChatRoom: React.FC = () => {
             >
               <div className="flex-shrink-0">
                 {message.userId === user?.id ? (
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gau-msa-primary text-white flex items-center justify-center text-xs md:text-sm font-semibold">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gau-msa-primary dark:bg-gau-msa-gold text-white dark:text-gray-900 flex items-center justify-center text-xs md:text-sm font-semibold">
                     {user?.full_name?.charAt(0) || 'U'}
                   </div>
                 ) : (
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-xs md:text-sm font-semibold">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300 flex items-center justify-center text-xs md:text-sm font-semibold">
                     {message.userName?.charAt(0) || 'U'}
                   </div>
                 )}
@@ -117,10 +117,10 @@ const ChatRoom: React.FC = () => {
                 } max-w-[75%]`}
               >
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-[10px] md:text-xs font-semibold text-gray-700">
+                  <span className="text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300">
                     {message.userName}
                   </span>
-                  <span className="text-[9px] md:text-[10px] text-gray-400">
+                  <span className="text-[9px] md:text-[10px] text-gray-400 dark:text-gray-500">
                     {message.timestamp
                       ? new Date(message.timestamp).toLocaleTimeString([], {
                           hour: '2-digit',
@@ -132,8 +132,8 @@ const ChatRoom: React.FC = () => {
                 <div
                   className={`px-3 md:px-4 py-2 rounded-2xl text-sm ${
                     message.userId === user?.id
-                      ? 'bg-gau-msa-primary text-white rounded-tr-sm'
-                      : 'bg-gray-100 text-gray-800 rounded-tl-sm'
+                      ? 'bg-gau-msa-primary dark:bg-gau-msa-gold text-white dark:text-gray-900 rounded-tr-sm'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-tl-sm'
                   }`}
                 >
                   {message.content}
@@ -147,7 +147,7 @@ const ChatRoom: React.FC = () => {
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="p-3 md:p-4 border-t border-gray-100"
+          className="p-3 md:p-4 border-t border-gray-100 dark:border-gray-700 transition-colors"
         >
           <div className="flex space-x-2">
             <input
@@ -155,11 +155,11 @@ const ChatRoom: React.FC = () => {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type your message..."
-              className="flex-1 px-3 md:px-4 py-2.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+              className="flex-1 px-3 md:px-4 py-2.5 md:py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary dark:focus:ring-gau-msa-gold focus:border-transparent text-sm transition-colors"
             />
             <button
               type="submit"
-              className="bg-gau-msa-primary text-white px-3 md:px-6 py-2.5 md:py-2 rounded-lg hover:bg-gau-msa-secondary active:scale-95 transition-all flex items-center space-x-1.5"
+              className="bg-gau-msa-primary dark:bg-gau-msa-gold text-white dark:text-gray-900 px-3 md:px-6 py-2.5 md:py-2 rounded-lg hover:bg-gau-msa-secondary dark:hover:opacity-90 active:scale-95 transition-all flex items-center space-x-1.5 font-semibold"
             >
               <Send className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Send</span>

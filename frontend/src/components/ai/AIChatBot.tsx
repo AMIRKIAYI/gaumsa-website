@@ -72,7 +72,7 @@ const AIChatBot: React.FC = () => {
         subtitle="Ask Islamic questions and get instant answers"
       />
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-[calc(100vh-280px)] md:h-[600px] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden h-[calc(100vh-280px)] md:h-[600px] flex flex-col transition-colors">
         {/* Header */}
         <div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary text-white p-3 md:p-4">
           <div className="flex items-center space-x-3">
@@ -105,8 +105,8 @@ const AIChatBot: React.FC = () => {
               <div
                 className={`flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center ${
                   message.role === 'assistant'
-                    ? 'bg-gau-msa-primary text-white'
-                    : 'bg-gray-200 text-gray-600'
+                    ? 'bg-gau-msa-primary dark:bg-gau-msa-gold text-white dark:text-gray-900'
+                    : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                 }`}
               >
                 {message.role === 'assistant' ? (
@@ -120,14 +120,14 @@ const AIChatBot: React.FC = () => {
                   message.role === 'user' ? 'items-end' : 'items-start'
                 }`}
               >
-                <div className="text-[10px] md:text-xs text-gray-500 mb-1">
+                <div className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 mb-1">
                   {message.role === 'assistant' ? 'AI Assistant' : 'You'}
                 </div>
                 <div
                   className={`px-3 md:px-4 py-2 rounded-2xl text-sm ${
                     message.role === 'user'
-                      ? 'bg-gau-msa-primary text-white rounded-tr-sm'
-                      : 'bg-gray-100 text-gray-800 rounded-tl-sm'
+                      ? 'bg-gau-msa-primary dark:bg-gau-msa-gold text-white dark:text-gray-900 rounded-tr-sm'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-tl-sm'
                   }`}
                 >
                   {message.content}
@@ -136,7 +136,7 @@ const AIChatBot: React.FC = () => {
             </div>
           ))}
           {isLoading && (
-            <div className="flex items-center space-x-2 text-gray-500 text-sm">
+            <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400 text-sm">
               <Loader2 className="animate-spin h-4 w-4 md:h-5 md:w-5" />
               <span>Thinking...</span>
             </div>
@@ -147,7 +147,7 @@ const AIChatBot: React.FC = () => {
         {/* Input */}
         <form
           onSubmit={handleSendMessage}
-          className="p-3 md:p-4 border-t border-gray-100"
+          className="p-3 md:p-4 border-t border-gray-100 dark:border-gray-700 transition-colors"
         >
           <div className="flex space-x-2">
             <input
@@ -155,13 +155,13 @@ const AIChatBot: React.FC = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about Quran, Hadith, Islamic teachings..."
-              className="flex-1 px-3 md:px-4 py-2.5 md:py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gau-msa-primary focus:border-transparent text-sm"
+              className="flex-1 px-3 md:px-4 py-2.5 md:py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gau-msa-primary dark:focus:ring-gau-msa-gold focus:border-transparent text-sm transition-colors"
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="bg-gau-msa-primary text-white px-3 md:px-6 py-2.5 md:py-2 rounded-lg hover:bg-gau-msa-secondary active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1.5"
+              className="bg-gau-msa-primary dark:bg-gau-msa-gold text-white dark:text-gray-900 px-3 md:px-6 py-2.5 md:py-2 rounded-lg hover:bg-gau-msa-secondary dark:hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1.5 font-semibold"
             >
               <Send className="h-4 w-4" />
               <span className="hidden sm:inline text-sm">Ask</span>

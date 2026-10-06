@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useAuth } from './AuthContext';
 
 type Theme = 'light' | 'dark';
 
@@ -11,18 +12,33 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first
-    const stored = localStorage.getItem('gaumsa-theme');
-    if (stored === 'dark' || stored === 'light') return stored;
+  const { user } = useAuth();
 
-    // Fall back to system preference
+  // Per-user storage key
+  const storageKey = user?.id ? `gaumsa-theme:${user.id}` : 'gaumsa-theme:guest';
+
+  const [theme, setTheme] = useState<Theme>(() => {
+    const stored = localStorage.getItem(storageKey);
+    if (stored === 'dark' || stored === 'light') return stored;
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark';
     }
     return 'light';
   });
 
+  // When the logged-in user changes, reload THAT user's theme
+  useEffect(() => {
+    const stored = localStorage.getItem(storageKey);
+    const next: Theme =
+      stored === 'dark' || stored === 'light'
+        ? stored
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+    setTheme(next);
+  }, [storageKey]);
+
+  // Apply + persist
   useEffect(() => {
     const root = document.documentElement;
 
@@ -32,8 +48,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       root.classList.remove('dark');
     }
 
-    localStorage.setItem('gaumsa-theme', theme);
-  }, [theme]);
+    localStorage.setItem(storageKey, theme);
+  }, [theme, storageKey]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));

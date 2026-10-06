@@ -573,13 +573,13 @@ function AppContent() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <AuthProvider>
+    <Router>
+      <AuthProvider>
+        <ThemeProvider>
           <AppContent />
-        </AuthProvider>
-      </Router>
-    </ThemeProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

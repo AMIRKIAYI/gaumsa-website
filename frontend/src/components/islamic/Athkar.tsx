@@ -10,7 +10,6 @@ import {
 import { athkarCategories } from '../../data/athkar';
 import PageHeader from '../ui/PageHeader';
 
-
 const Athkar: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     athkarCategories[0].id
@@ -82,8 +81,8 @@ const Athkar: React.FC = () => {
             }}
             className={`flex-shrink-0 flex items-center space-x-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-medium transition-all ${
               selectedCategory === cat.id
-                ? 'bg-gau-msa-primary text-white shadow-md'
-                : 'bg-white text-gray-700 border border-gray-200 hover:border-gau-msa-primary'
+                ? 'bg-gau-msa-primary dark:bg-gau-msa-gold text-white dark:text-gray-900 shadow-md'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-gau-msa-primary dark:hover:border-gau-msa-gold'
             }`}
           >
             <span className="text-base md:text-lg">{cat.icon}</span>
@@ -93,24 +92,26 @@ const Athkar: React.FC = () => {
       </div>
 
       {/* Progress + Reset */}
-      <div className="bg-white rounded-2xl p-3 md:p-4 border border-gray-100 flex items-center gap-3">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-3 md:p-4 border border-gray-100 dark:border-gray-700 flex items-center gap-3 transition-colors">
         <div className="flex-1">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs md:text-sm font-medium text-gray-700">
+            <p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">
               Progress: {currentIndex + 1} of {category.athkar.length}
             </p>
-            <p className="text-xs text-gray-500">{Math.round(progress)}%</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {Math.round(progress)}%
+            </p>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2">
+          <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
             <div
-              className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary h-2 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary dark:from-gau-msa-gold dark:to-gau-msa-gold h-2 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
         <button
           onClick={reset}
-          className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 active:scale-95 transition-all flex-shrink-0"
+          className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 active:scale-95 transition-all flex-shrink-0"
           title="Reset"
         >
           <RotateCcw className="h-4 w-4" />
@@ -118,7 +119,7 @@ const Athkar: React.FC = () => {
       </div>
 
       {/* Current Athkar Card */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden transition-colors">
         <div className="bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary text-white px-4 py-2 flex items-center justify-between">
           <p className="text-xs md:text-sm font-medium">
             {category.icon} {category.label}
@@ -129,13 +130,13 @@ const Athkar: React.FC = () => {
         </div>
 
         <div className="p-4 md:p-8">
-          <h3 className="text-center text-sm md:text-base font-semibold text-gau-msa-primary mb-4 md:mb-6">
+          <h3 className="text-center text-sm md:text-base font-semibold text-gau-msa-primary dark:text-gau-msa-gold mb-4 md:mb-6">
             {currentAthkar.text}
           </h3>
 
-          <div className="bg-gradient-to-br from-gau-msa-primary/5 to-gau-msa-secondary/5 rounded-xl p-4 md:p-6 mb-4 md:mb-6">
+          <div className="bg-gradient-to-br from-gau-msa-primary/5 to-gau-msa-secondary/5 dark:from-gau-msa-gold/10 dark:to-gau-msa-gold/5 rounded-xl p-4 md:p-6 mb-4 md:mb-6 transition-colors">
             <p
-              className="text-xl md:text-3xl text-gau-msa-primary text-center leading-[2.2]"
+              className="text-xl md:text-3xl text-gau-msa-primary dark:text-gau-msa-gold text-center leading-[2.2]"
               dir="rtl"
               style={{ fontFamily: '"Amiri", "Scheherazade New", serif' }}
             >
@@ -143,13 +144,13 @@ const Athkar: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-blue-50 rounded-xl p-3 md:p-4 mb-4 md:mb-6 border-l-4 border-blue-500">
-            <p className="text-xs md:text-sm text-gray-700 leading-relaxed italic">
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 md:p-4 mb-4 md:mb-6 border-l-4 border-blue-500 dark:border-blue-400 transition-colors">
+            <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300 leading-relaxed italic">
               "{currentAthkar.translation}"
             </p>
           </div>
 
-          <p className="text-center text-[11px] md:text-xs text-gray-500 mb-4 md:mb-6">
+          <p className="text-center text-[11px] md:text-xs text-gray-500 dark:text-gray-400 mb-4 md:mb-6">
             📖 {currentAthkar.reference}
           </p>
 
@@ -158,8 +159,8 @@ const Athkar: React.FC = () => {
             disabled={completed.has(currentAthkar.id)}
             className={`w-full py-6 md:py-8 rounded-2xl font-bold text-white transition-all duration-300 shadow-lg active:scale-95 disabled:cursor-not-allowed ${
               completed.has(currentAthkar.id)
-                ? 'bg-green-500'
-                : 'bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary hover:opacity-90'
+                ? 'bg-green-500 dark:bg-green-600'
+                : 'bg-gradient-to-r from-gau-msa-primary to-gau-msa-secondary dark:from-gau-msa-gold dark:to-amber-600 hover:opacity-90'
             }`}
           >
             {completed.has(currentAthkar.id) ? (
@@ -178,24 +179,24 @@ const Athkar: React.FC = () => {
           </button>
         </div>
 
-        <div className="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-100">
+        <div className="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 flex items-center justify-between border-t border-gray-100 dark:border-gray-700 transition-colors">
           <button
             onClick={goPrev}
             disabled={currentIndex === 0}
-            className="flex items-center space-x-1 px-3 py-2 rounded-lg text-xs md:text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center space-x-1 px-3 py-2 rounded-lg text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <ChevronLeft className="h-4 w-4" />
             <span>Previous</span>
           </button>
 
-          <span className="text-xs md:text-sm text-gray-500">
+          <span className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
             {completedInCategory} / {category.athkar.length} done
           </span>
 
           <button
             onClick={goNext}
             disabled={currentIndex === category.athkar.length - 1}
-            className="flex items-center space-x-1 px-3 py-2 rounded-lg text-xs md:text-sm font-medium text-gray-700 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center space-x-1 px-3 py-2 rounded-lg text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             <span>Next</span>
             <ChevronRight className="h-4 w-4" />
@@ -205,10 +206,10 @@ const Athkar: React.FC = () => {
 
       {/* Completion */}
       {allDone && (
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 text-white text-center shadow-lg">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 rounded-2xl p-6 text-white text-center shadow-lg">
           <Sparkles className="h-12 w-12 mx-auto mb-3" />
           <h3 className="text-xl font-bold mb-1">MashaAllah!</h3>
-          <p className="text-sm text-green-100">
+          <p className="text-sm text-green-100 dark:text-green-200">
             You've completed all {category.label.toLowerCase()} athkar
           </p>
         </div>
