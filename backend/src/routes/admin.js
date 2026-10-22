@@ -4,6 +4,15 @@ const supabase = require('../config/supabase');
 const { verifyToken } = require('../middleware/auth');
 const { isAdmin, isRegistrar } = require('../middleware/roles');
 
+// ✅ Default values for newly created users
+const DEFAULT_PASSWORD = '12345';
+const DEFAULT_NOTIFICATIONS = {
+  email: true,
+  prayer: true,
+  events: true,
+  messages: true,
+};
+
 // ==================== USERS MANAGEMENT ====================
 
 // Get all users
@@ -56,12 +65,35 @@ router.get('/users/:id', verifyToken, isRegistrar, async (req, res) => {
   }
 });
 
-// Create single user
+// ✅ Create single user (password defaults to 12345)
 router.post('/users', verifyToken, isRegistrar, async (req, res) => {
-  try {
-    const { reg_no, full_name, phone, email, department, year_of_study } = req.body;
+  let createdAuthId = null;
 
-    // Check if user exists
+  try {
+    const {
+      reg_no,
+      full_name,
+      phone,
+      email,
+      department,
+      year_of_study,
+      password,
+    } = req.body;
+
+    if (!email || !full_name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and full name are required',
+      });
+    }
+
+    // ✅ Use provided password or default to 12345
+    const finalPassword =
+      typeof password === 'string' && password.trim()
+        ? password.trim()
+        : DEFAULT_PASSWORD;
+
+    // Check if user exists in public.users
     const { data: existing } = await supabase
       .from('users')
       .select('email')
@@ -71,34 +103,39 @@ router.post('/users', verifyToken, isRegistrar, async (req, res) => {
     if (existing) {
       return res.status(400).json({
         success: false,
-        error: 'User already exists'
+        error: 'User already exists',
       });
     }
 
     // Create auth user
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email,
-      password: 'GAUMSA1234',
-      email_confirm: true,
-      user_metadata: { full_name }
-    });
+    const { data: authData, error: authError } =
+      await supabase.auth.admin.createUser({
+        email,
+        password: finalPassword,
+        email_confirm: true,
+        user_metadata: { full_name },
+      });
 
     if (authError) throw authError;
+    createdAuthId = authData.user.id;
 
     // Create user profile
     const { data: userData, error: userError } = await supabase
       .from('users')
       .insert({
         id: authData.user.id,
-        reg_no,
+        reg_no: reg_no || null,
         full_name,
-        phone,
+        phone: phone || null,
         email,
-        department,
+        department: department || null,
         year_of_study: year_of_study || '1st Year',
         role: 'member',
         is_verified: true,
-        created_by: req.user.id
+        profile_completed: false,      // ✅ forces profile completion
+        must_change_password: true,    // ✅ see note below
+        notifications: DEFAULT_NOTIFICATIONS, // ✅ default prefs
+        created_by: req.user.id,
       })
       .select()
       .single();
@@ -108,46 +145,76 @@ router.post('/users', verifyToken, isRegistrar, async (req, res) => {
     res.json({
       success: true,
       data: userData,
-      message: 'User registered successfully'
+      message: `User created successfully. Default password: ${finalPassword}`,
     });
   } catch (error) {
+    // ✅ Cleanup: if auth was created but profile failed, delete the auth user
+    if (createdAuthId) {
+      try {
+        await supabase.auth.admin.deleteUser(createdAuthId);
+      } catch (cleanupErr) {
+        console.error('Cleanup failed for auth user', createdAuthId, cleanupErr);
+      }
+    }
     res.status(400).json({ success: false, error: error.message });
   }
 });
 
-// Bulk create users
+// ✅ Bulk create users (password defaults to 12345)
 router.post('/users/bulk', verifyToken, isRegistrar, async (req, res) => {
   try {
     const { users } = req.body;
+    if (!Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No users provided',
+      });
+    }
+
     const results = [];
     const errors = [];
 
     for (const user of users) {
+      let createdAuthId = null;
       try {
+        if (!user.email || !user.full_name) {
+          throw new Error('Email and full name are required');
+        }
+
+        const finalPassword =
+          typeof user.password === 'string' && user.password.trim()
+            ? user.password.trim()
+            : DEFAULT_PASSWORD;
+
         // Create auth user
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-          email: user.email,
-          password: 'GAUMSA1234',
-          email_confirm: true,
-          user_metadata: { full_name: user.full_name }
-        });
+        const { data: authData, error: authError } =
+          await supabase.auth.admin.createUser({
+            email: user.email,
+            password: finalPassword,
+            email_confirm: true,
+            user_metadata: { full_name: user.full_name },
+          });
 
         if (authError) throw authError;
+        createdAuthId = authData.user.id;
 
         // Create user profile
         const { data: userData, error: userError } = await supabase
           .from('users')
           .insert({
             id: authData.user.id,
-            reg_no: user.reg_no,
+            reg_no: user.reg_no || null,
             full_name: user.full_name,
-            phone: user.phone,
+            phone: user.phone || null,
             email: user.email,
-            department: user.department,
+            department: user.department || null,
             year_of_study: user.year_of_study || '1st Year',
             role: 'member',
             is_verified: true,
-            created_by: req.user.id
+            profile_completed: false,
+            must_change_password: true,
+            notifications: DEFAULT_NOTIFICATIONS,
+            created_by: req.user.id,
           })
           .select()
           .single();
@@ -155,6 +222,14 @@ router.post('/users/bulk', verifyToken, isRegistrar, async (req, res) => {
         if (userError) throw userError;
         results.push(userData);
       } catch (error) {
+        // Cleanup orphaned auth user
+        if (createdAuthId) {
+          try {
+            await supabase.auth.admin.deleteUser(createdAuthId);
+          } catch (cleanupErr) {
+            console.error('Cleanup failed for', createdAuthId, cleanupErr);
+          }
+        }
         errors.push({ email: user.email, error: error.message });
       }
     }
@@ -163,7 +238,7 @@ router.post('/users/bulk', verifyToken, isRegistrar, async (req, res) => {
       success: true,
       data: results,
       errors: errors.length > 0 ? errors : undefined,
-      message: `${results.length} users registered successfully`
+      message: `${results.length} users registered successfully. Default password: ${DEFAULT_PASSWORD}`,
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -188,7 +263,7 @@ router.patch('/users/:id/verify', verifyToken, isRegistrar, async (req, res) => 
     res.json({
       success: true,
       data,
-      message: `User ${is_verified ? 'verified' : 'unverified'}`
+      message: `User ${is_verified ? 'verified' : 'unverified'}`,
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -205,11 +280,7 @@ router.delete('/users/:id', verifyToken, isAdmin, async (req, res) => {
     if (authError) throw authError;
 
     // Delete from users table
-    const { error } = await supabase
-      .from('users')
-      .delete()
-      .eq('id', id);
-
+    const { error } = await supabase.from('users').delete().eq('id', id);
     if (error) throw error;
 
     res.json({ success: true, message: 'User deleted successfully' });
@@ -259,7 +330,7 @@ router.post('/registration-requests', verifyToken, isRegistrar, async (req, res)
         department,
         year_of_study: year_of_study || '1st Year',
         requested_by: req.user.id,
-        status: 'pending'
+        status: 'pending',
       })
       .select()
       .single();
@@ -279,19 +350,19 @@ router.post('/registration-requests/bulk', verifyToken, isRegistrar, async (req,
     const results = [];
     const errors = [];
 
-    for (const req of requests) {
+    for (const r of requests) {
       try {
         const { data, error } = await supabase
           .from('registration_requests')
           .insert({
-            reg_no: req.reg_no,
-            full_name: req.full_name,
-            phone: req.phone,
-            email: req.email,
-            department: req.department,
-            year_of_study: req.year_of_study || '1st Year',
-            requested_by: req.user?.id || null,
-            status: 'pending'
+            reg_no: r.reg_no,
+            full_name: r.full_name,
+            phone: r.phone,
+            email: r.email,
+            department: r.department,
+            year_of_study: r.year_of_study || '1st Year',
+            requested_by: req.user.id,
+            status: 'pending',
           })
           .select()
           .single();
@@ -299,7 +370,7 @@ router.post('/registration-requests/bulk', verifyToken, isRegistrar, async (req,
         if (error) throw error;
         results.push(data);
       } catch (error) {
-        errors.push({ reg_no: req.reg_no, error: error.message });
+        errors.push({ reg_no: r.reg_no, error: error.message });
       }
     }
 
@@ -307,7 +378,7 @@ router.post('/registration-requests/bulk', verifyToken, isRegistrar, async (req,
       success: true,
       data: results,
       errors: errors.length > 0 ? errors : undefined,
-      message: `${results.length} requests created successfully`
+      message: `${results.length} requests created successfully`,
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -319,7 +390,6 @@ router.post('/registration-requests/:id/approve', verifyToken, isRegistrar, asyn
   try {
     const { id } = req.params;
 
-    // Get the request
     const { data: request, error: getError } = await supabase
       .from('registration_requests')
       .select('*')
@@ -329,10 +399,9 @@ router.post('/registration-requests/:id/approve', verifyToken, isRegistrar, asyn
     if (getError) throw getError;
     if (!request) throw new Error('Request not found');
 
-    // Call the approve function
     const { data, error } = await supabase.rpc('approve_registration', {
       request_id: id,
-      approver_id: req.user.id
+      approver_id: req.user.id,
     });
 
     if (error) throw error;
@@ -340,7 +409,7 @@ router.post('/registration-requests/:id/approve', verifyToken, isRegistrar, asyn
     res.json({
       success: true,
       data: { user_id: data },
-      message: 'Registration approved successfully'
+      message: 'Registration approved successfully',
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -357,7 +426,7 @@ router.patch('/registration-requests/:id/reject', verifyToken, isRegistrar, asyn
       .update({
         status: 'rejected',
         approved_by: req.user.id,
-        approved_at: new Date()
+        approved_at: new Date(),
       })
       .eq('id', id)
       .select()
@@ -405,8 +474,8 @@ router.get('/stats', verifyToken, isRegistrar, async (req, res) => {
         verifiedUsers,
         adminUsers,
         pendingRequests,
-        totalActivities
-      }
+        totalActivities,
+      },
     });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });

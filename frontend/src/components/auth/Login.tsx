@@ -20,7 +20,8 @@ const Login: React.FC = () => {
       return;
     }
 
-    if (!password || password.length < 6) {
+    // ✅ Only require a non-empty password — let the backend verify it
+    if (!password || password.trim().length === 0) {
       setError('Please enter your password');
       return;
     }
