@@ -4,7 +4,7 @@ const supabase = require('../config/supabase');
 const { verifyToken } = require('../middleware/auth');
 const { isAdmin, isRegistrar } = require('../middleware/roles');
 
-const DEFAULT_PASSWORD = '12345';
+const DEFAULT_PASSWORD = '123456';
 const DEFAULT_NOTIFICATIONS = {
   email: true,
   prayer: true,
