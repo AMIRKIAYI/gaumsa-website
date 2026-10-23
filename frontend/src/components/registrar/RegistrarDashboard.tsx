@@ -798,7 +798,7 @@ const RegistrarDashboard: React.FC = () => {
               <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 dark:border-blue-400 rounded-r-lg p-3 flex items-start space-x-2">
                 <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-blue-700 dark:text-blue-300">
-                  New members get the default password <strong>12345</strong>. They'll be prompted to change it on first login.
+                  New members get the default password <strong>123456</strong>. They'll be prompted to change it on first login.
                 </p>
               </div>
 
@@ -1094,7 +1094,7 @@ const RegistrarDashboard: React.FC = () => {
                   REG_NO, NAME, PHONE, EMAIL, DEPARTMENT, YEAR
                 </code>
                 <p className="text-[11px] text-blue-700 dark:text-blue-300 mt-1">
-                  Default password: <strong>12345</strong>
+                  Default password: <strong>123456</strong>
                 </p>
               </div>
               <textarea

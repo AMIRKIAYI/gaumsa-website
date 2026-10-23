@@ -167,8 +167,8 @@ router.post('/signin', async (req, res) => {
       year_of_study: finalUserData?.year_of_study || null,
       phone: finalUserData?.phone || null,
       profile_completed: finalUserData?.profile_completed || false,
-      must_change_password: finalUserData?.must_change_password || false, // ✅
-      notifications: finalUserData?.notifications || null,                // ✅
+      must_change_password: finalUserData?.must_change_password || false,
+      notifications: finalUserData?.notifications || null,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
         finalUserData?.full_name || 'User'
       )}&background=1a472a&color=fff&size=128`,
@@ -221,8 +221,8 @@ router.get('/me', verifyToken, async (req, res) => {
       year_of_study: userData?.year_of_study || null,
       phone: userData?.phone || null,
       profile_completed: userData?.profile_completed || false,
-      must_change_password: userData?.must_change_password || false, // ✅
-      notifications: userData?.notifications || null,                // ✅
+      must_change_password: userData?.must_change_password || false,
+      notifications: userData?.notifications || null,
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
         userData?.full_name || 'User'
       )}&background=1a472a&color=fff&size=128`,
@@ -253,7 +253,6 @@ router.put('/update-profile', verifyToken, async (req, res) => {
       });
     }
 
-    // Check if reg_no is already taken
     const { data: existing } = await supabase
       .from('users')
       .select('id')
@@ -276,7 +275,7 @@ router.put('/update-profile', verifyToken, async (req, res) => {
         year_of_study,
         phone: phone || null,
         profile_completed: true,
-        updated_at: new Date().toISOString(),   // ✅ ISO string
+        updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
       .select()
@@ -325,7 +324,6 @@ router.patch('/update-password', verifyToken, async (req, res) => {
       });
     }
 
-    // Update the auth password using the service role
     const { error: authError } = await supabase.auth.admin.updateUserById(
       req.user.id,
       { password: newPassword }
@@ -333,7 +331,6 @@ router.patch('/update-password', verifyToken, async (req, res) => {
 
     if (authError) throw authError;
 
-    // Clear the must_change_password flag
     const { data, error } = await supabase
       .from('users')
       .update({
@@ -363,6 +360,66 @@ router.patch('/update-password', verifyToken, async (req, res) => {
     res.status(400).json({
       success: false,
       error: error.message || 'Failed to update password',
+    });
+  }
+});
+
+// ==================== ✅ UPDATE NOTIFICATIONS ====================
+router.patch('/notifications', verifyToken, async (req, res) => {
+  try {
+    const { notifications } = req.body;
+
+    if (!notifications || typeof notifications !== 'object') {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid notifications payload',
+      });
+    }
+
+    const allowed = ['email', 'prayer', 'events', 'messages'];
+    const clean = {};
+    for (const key of allowed) {
+      if (typeof notifications[key] === 'boolean') {
+        clean[key] = notifications[key];
+      }
+    }
+
+    if (Object.keys(clean).length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No valid notification keys provided',
+      });
+    }
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        notifications: clean,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', req.user.id)
+      .select()
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) {
+      return res.status(500).json({
+        success: false,
+        error: 'Update returned 0 rows — check triggers or constraints',
+      });
+    }
+
+    console.log('✅ Notifications updated for:', req.user.email, clean);
+
+    res.json({
+      success: true,
+      data: clean,
+    });
+  } catch (error) {
+    console.error('Update notifications error:', error);
+    res.status(400).json({
+      success: false,
+      error: error.message || 'Failed to update notifications',
     });
   }
 });
