@@ -11,7 +11,14 @@ export interface User {
   phone?: string;
   department?: string;
   year_of_study?: string;
-  profile_completed?: boolean; // ✅ Add this
+  profile_completed?: boolean;
+  must_change_password?: boolean;
+  notifications?: {
+    email: boolean;
+    prayer: boolean;
+    events: boolean;
+    messages: boolean;
+  };
   avatar?: string;
 }
 
@@ -22,29 +29,46 @@ interface AuthContextType {
   register: (email: string, password: string, full_name: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   logout: () => void;
   isLoading: boolean;
-  isInitialized: boolean;   // ← NEW: true once localStorage has been checked
+  isInitialized: boolean;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUserState] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);   // ← NEW
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // ✅ Wrapped setUser — persists to localStorage automatically
+  const setUser: React.Dispatch<React.SetStateAction<User | null>> = (action) => {
+    setUserState((prev) => {
+      const next =
+        typeof action === 'function'
+          ? (action as (prev: User | null) => User | null)(prev)
+          : action;
+
+      if (next) {
+        localStorage.setItem('user', JSON.stringify(next));
+      } else {
+        localStorage.removeItem('user');
+      }
+      return next;
+    });
+  };
 
   useEffect(() => {
     console.log('🚀 AuthProvider: initializing from localStorage');
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
-    
+
     if (storedToken && storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
         console.log('✅ Found stored session:', parsedUser.email, '| role:', parsedUser.role);
         setToken(storedToken);
-        setUser(parsedUser);
+        setUserState(parsedUser);
       } catch (err) {
         console.error('❌ Failed to parse stored user:', err);
         localStorage.removeItem('token');
@@ -53,8 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       console.log('ℹ️ No stored session found');
     }
-    
-    // ✅ Mark initialization complete
+
     setIsInitialized(true);
     console.log('✅ AuthProvider initialized');
   }, []);
@@ -65,18 +88,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!email || !email.includes('@')) {
         throw new Error('Please enter a valid email address');
       }
-      
+
       const res = await api.signin(email, password);
       if (!res.success) {
         throw new Error(res.error || 'Login failed');
       }
-      
+
       console.log('✅ Login successful:', res.user.email, '| role:', res.user.role);
-      
+
+      // Use setUser wrapper so localStorage is written too
       setUser(res.user);
       setToken(res.session?.access_token || '');
       localStorage.setItem('token', res.session?.access_token || '');
-      localStorage.setItem('user', JSON.stringify(res.user));
     } catch (error: any) {
       throw new Error(error.message || 'Login failed');
     } finally {
@@ -98,11 +121,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const res = await api.signup(email, password, full_name);
-      
+
       if (!res.success) {
         return { success: false, error: res.error || 'Registration failed.' };
       }
-      
+
       return { success: true, message: 'Account created successfully!' };
     } catch (error: any) {
       return { success: false, error: error.message || 'Registration failed.' };
@@ -112,25 +135,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    setUser(null);
+    setUserState(null);
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={{ 
-  user, 
-  token, 
-  login, 
-  register, 
-  logout, 
-  isLoading, 
-  isInitialized,
-  setUser, // ✅ Add this
-}}>
-  {children}
-</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        login,
+        register,
+        logout,
+        isLoading,
+        isInitialized,
+        setUser,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
 };
 

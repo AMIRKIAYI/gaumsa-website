@@ -11,7 +11,14 @@ router.post('/signup', async (req, res) => {
     if (!email || !password || !full_name) {
       return res.status(400).json({
         success: false,
-        error: 'Email, password, and full name are required'
+        error: 'Email, password, and full name are required',
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 6 characters',
       });
     }
 
@@ -24,7 +31,7 @@ router.post('/signup', async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: 'User already exists. Please contact registrar.'
+        error: 'User already exists. Please contact registrar.',
       });
     }
 
@@ -32,15 +39,15 @@ router.post('/signup', async (req, res) => {
       email,
       password,
       options: {
-        data: { full_name: full_name, email: email }
-      }
+        data: { full_name: full_name, email: email },
+      },
     });
 
     if (authError) {
       console.error('Auth error:', authError);
       return res.status(400).json({
         success: false,
-        error: authError.message || 'Failed to create account'
+        error: authError.message || 'Failed to create account',
       });
     }
 
@@ -53,7 +60,8 @@ router.post('/signup', async (req, res) => {
           email: email,
           role: 'member',
           is_verified: true,
-          profile_completed: false // ✅ New user — needs to complete profile
+          profile_completed: false,
+          must_change_password: false,   // ✅ self-signup chose their own password
         });
 
       if (profileError) {
@@ -61,7 +69,7 @@ router.post('/signup', async (req, res) => {
         await supabase.auth.admin.deleteUser(authData.user.id);
         return res.status(400).json({
           success: false,
-          error: 'Failed to create user profile. Please try again.'
+          error: 'Failed to create user profile. Please try again.',
         });
       }
     }
@@ -69,13 +77,13 @@ router.post('/signup', async (req, res) => {
     res.json({
       success: true,
       message: 'Account created successfully!',
-      user: authData.user
+      user: authData.user,
     });
   } catch (error) {
     console.error('Signup error:', error);
     res.status(400).json({
       success: false,
-      error: error.message || 'Registration failed'
+      error: error.message || 'Registration failed',
     });
   }
 });
@@ -88,19 +96,19 @@ router.post('/signin', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: 'Email and password are required'
+        error: 'Email and password are required',
       });
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (error) {
       return res.status(400).json({
         success: false,
-        error: error.message || 'Invalid credentials'
+        error: error.message || 'Invalid credentials',
       });
     }
 
@@ -109,7 +117,9 @@ router.post('/signin', async (req, res) => {
 
     const { data: userData, error: userError } = await supabase
       .from('users')
-      .select('id, full_name, email, role, is_verified, reg_no, department, year_of_study, phone, profile_completed, created_at')
+      .select(
+        'id, full_name, email, role, is_verified, reg_no, department, year_of_study, phone, profile_completed, must_change_password, notifications, created_at'
+      )
       .eq('id', data.user.id)
       .maybeSingle();
 
@@ -131,7 +141,8 @@ router.post('/signin', async (req, res) => {
           email: data.user.email,
           role: 'member',
           is_verified: true,
-          profile_completed: false
+          profile_completed: false,
+          must_change_password: false,
         })
         .select()
         .maybeSingle();
@@ -141,7 +152,7 @@ router.post('/signin', async (req, res) => {
     if (finalUserData?.role === 'member' && !finalUserData?.is_verified) {
       return res.status(403).json({
         success: false,
-        error: 'Account not verified. Please contact registrar.'
+        error: 'Account not verified. Please contact registrar.',
       });
     }
 
@@ -156,10 +167,23 @@ router.post('/signin', async (req, res) => {
       year_of_study: finalUserData?.year_of_study || null,
       phone: finalUserData?.phone || null,
       profile_completed: finalUserData?.profile_completed || false,
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(finalUserData?.full_name || 'User')}&background=1a472a&color=fff&size=128`,
+      must_change_password: finalUserData?.must_change_password || false, // ✅
+      notifications: finalUserData?.notifications || null,                // ✅
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        finalUserData?.full_name || 'User'
+      )}&background=1a472a&color=fff&size=128`,
     };
 
-    console.log('✅ Signed in:', cleanUser.email, '| Role:', cleanUser.role, '| Profile completed:', cleanUser.profile_completed);
+    console.log(
+      '✅ Signed in:',
+      cleanUser.email,
+      '| Role:',
+      cleanUser.role,
+      '| Profile completed:',
+      cleanUser.profile_completed,
+      '| Must change password:',
+      cleanUser.must_change_password
+    );
 
     res.json({
       success: true,
@@ -170,7 +194,7 @@ router.post('/signin', async (req, res) => {
     console.error('Signin error:', error);
     res.status(400).json({
       success: false,
-      error: error.message || 'Login failed'
+      error: error.message || 'Login failed',
     });
   }
 });
@@ -180,7 +204,9 @@ router.get('/me', verifyToken, async (req, res) => {
   try {
     const { data: userData } = await supabase
       .from('users')
-      .select('id, full_name, email, role, is_verified, reg_no, department, year_of_study, phone, profile_completed, created_at')
+      .select(
+        'id, full_name, email, role, is_verified, reg_no, department, year_of_study, phone, profile_completed, must_change_password, notifications, created_at'
+      )
       .eq('id', req.user.id)
       .maybeSingle();
 
@@ -195,17 +221,21 @@ router.get('/me', verifyToken, async (req, res) => {
       year_of_study: userData?.year_of_study || null,
       phone: userData?.phone || null,
       profile_completed: userData?.profile_completed || false,
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData?.full_name || 'User')}&background=1a472a&color=fff&size=128`,
+      must_change_password: userData?.must_change_password || false, // ✅
+      notifications: userData?.notifications || null,                // ✅
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        userData?.full_name || 'User'
+      )}&background=1a472a&color=fff&size=128`,
     };
 
     res.json({
       success: true,
-      user: cleanUser
+      user: cleanUser,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -216,15 +246,14 @@ router.put('/update-profile', verifyToken, async (req, res) => {
     const { reg_no, department, year_of_study, phone } = req.body;
     const userId = req.user.id;
 
-    // Validate required fields
     if (!reg_no || !department || !year_of_study) {
       return res.status(400).json({
         success: false,
-        error: 'Registration number, department, and year of study are required'
+        error: 'Registration number, department, and year of study are required',
       });
     }
 
-    // Check if reg_no is already taken by another user
+    // Check if reg_no is already taken
     const { data: existing } = await supabase
       .from('users')
       .select('id')
@@ -235,11 +264,10 @@ router.put('/update-profile', verifyToken, async (req, res) => {
     if (existing) {
       return res.status(400).json({
         success: false,
-        error: 'This registration number is already in use by another member'
+        error: 'This registration number is already in use by another member',
       });
     }
 
-    // Update the user profile
     const { data: updatedUser, error } = await supabase
       .from('users')
       .update({
@@ -248,13 +276,19 @@ router.put('/update-profile', verifyToken, async (req, res) => {
         year_of_study,
         phone: phone || null,
         profile_completed: true,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(),   // ✅ ISO string
       })
       .eq('id', userId)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!updatedUser) {
+      return res.status(500).json({
+        success: false,
+        error: 'Profile update returned 0 rows — check triggers or constraints',
+      });
+    }
 
     console.log('✅ Profile completed for user:', updatedUser.email);
 
@@ -268,6 +302,67 @@ router.put('/update-profile', verifyToken, async (req, res) => {
     res.status(400).json({
       success: false,
       error: error.message || 'Failed to update profile',
+    });
+  }
+});
+
+// ==================== ✅ UPDATE PASSWORD ====================
+router.patch('/update-password', verifyToken, async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 6 characters',
+      });
+    }
+
+    if (newPassword === '123456') {
+      return res.status(400).json({
+        success: false,
+        error: 'Please choose a password other than the default',
+      });
+    }
+
+    // Update the auth password using the service role
+    const { error: authError } = await supabase.auth.admin.updateUserById(
+      req.user.id,
+      { password: newPassword }
+    );
+
+    if (authError) throw authError;
+
+    // Clear the must_change_password flag
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        must_change_password: false,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', req.user.id)
+      .select()
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) {
+      return res.status(500).json({
+        success: false,
+        error: 'Password updated, but profile flag could not be cleared',
+      });
+    }
+
+    console.log('✅ Password updated for:', req.user.email);
+
+    res.json({
+      success: true,
+      message: 'Password updated successfully',
+    });
+  } catch (error) {
+    console.error('Update password error:', error);
+    res.status(400).json({
+      success: false,
+      error: error.message || 'Failed to update password',
     });
   }
 });

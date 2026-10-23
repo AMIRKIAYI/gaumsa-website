@@ -32,7 +32,9 @@ import Hadiths from './components/islamic/Hadiths';
 import Athkar from './components/islamic/Athkar';
 import Nawawi40 from './components/islamic/Nawawi40';
 import ProfileCompletionModal from './components/profile/ProfileCompletionModal';
+import ChangePasswordModal from './components/profile/ChangePasswordModal'; // ✅ NEW
 import { ThemeProvider } from './contexts/ThemeContext';
+import { NotificationProvider } from './contexts/NotificationContext';
 
 // ==================== ROUTE GUARDS ====================
 
@@ -403,39 +405,53 @@ const Home = () => {
 function AppContent() {
   const { user, isInitialized } = useAuth();
   const [showCompletion, setShowCompletion] = React.useState(false);
+  const [showChangePassword, setShowChangePassword] = React.useState(false); // ✅ NEW
 
-  // Show the modal when user logs in but hasn't completed profile
+  // ✅ Show password change FIRST if flagged
   React.useEffect(() => {
-  if (!user) {
-    setShowCompletion(false);
-    return;
-  }
+    if (!user) {
+      setShowChangePassword(false);
+      return;
+    }
+    setShowChangePassword(!!user.must_change_password);
+  }, [user]);
 
-  // Only members need to complete their profile
-  if (user.role !== 'member') {
-    setShowCompletion(false);
-    return;
-  }
+  // Show profile completion only after password is changed
+  React.useEffect(() => {
+    if (!user) {
+      setShowCompletion(false);
+      return;
+    }
 
-  // ✅ Check if any required field is missing
-  const isProfileIncomplete =
-    !user.profile_completed ||
-    !user.reg_no ||
-    !user.reg_no.trim() ||
-    !user.department ||
-    !user.department.trim() ||
-    !user.year_of_study ||
-    !user.year_of_study.trim();
+    if (user.role !== 'member') {
+      setShowCompletion(false);
+      return;
+    }
 
-  setShowCompletion(isProfileIncomplete);
-}, [user]);
+    // ✅ Don't show profile completion until password is changed
+    if (user.must_change_password) {
+      setShowCompletion(false);
+      return;
+    }
+
+    const isProfileIncomplete =
+      !user.profile_completed ||
+      !user.reg_no ||
+      !user.reg_no.trim() ||
+      !user.department ||
+      !user.department.trim() ||
+      !user.year_of_study ||
+      !user.year_of_study.trim();
+
+    setShowCompletion(isProfileIncomplete);
+  }, [user]);
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gau-msa-primary mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gau-msa-primary dark:border-gau-msa-gold mx-auto mb-4"></div>
+          <p className="text-gray-500 dark:text-gray-400">Loading...</p>
         </div>
       </div>
     );
@@ -561,8 +577,13 @@ function AppContent() {
         <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
       </Routes>
 
-      {/* Profile completion modal — shows for new members only */}
-      {showCompletion && (
+      {/* ✅ Password change modal — shows FIRST if flagged */}
+      {showChangePassword && user && (
+        <ChangePasswordModal onComplete={() => setShowChangePassword(false)} />
+      )}
+
+      {/* Profile completion — only after password is changed */}
+      {!showChangePassword && showCompletion && (
         <ProfileCompletionModal onComplete={() => setShowCompletion(false)} />
       )}
     </>
@@ -576,7 +597,9 @@ function App() {
     <Router>
       <AuthProvider>
         <ThemeProvider>
-          <AppContent />
+          <NotificationProvider>
+            <AppContent />
+          </NotificationProvider>
         </ThemeProvider>
       </AuthProvider>
     </Router>

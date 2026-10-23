@@ -27,7 +27,6 @@ export const api = {
     return response.json();
   },
 
-  // ✅ NEW: Update profile (for the completion modal)
   updateProfile: async (
     token: string,
     data: {
@@ -44,6 +43,19 @@ export const api = {
         'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  // ✅ NEW: Update password
+  updatePassword: async (token: string, newPassword: string) => {
+    const response = await fetch(`${API_URL}/auth/update-password`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ newPassword }),
     });
     return response.json();
   },
@@ -153,6 +165,55 @@ export const api = {
     return response.json();
   },
 
+  // ✅ NEW: Update user (used by RegistrarDashboard edit modal)
+  updateUser: async (
+    token: string,
+    userId: string,
+    data: {
+      full_name?: string;
+      phone?: string;
+      reg_no?: string;
+      department?: string;
+      year_of_study?: string;
+      role?: string;
+    }
+  ) => {
+    const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  // ✅ NEW: Delete user
+  deleteUser: async (token: string, userId: string) => {
+    const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    return response.json();
+  },
+
+  // ✅ NEW: Reset user password (admin only)
+  resetUserPassword: async (token: string, userId: string, password?: string) => {
+    const response = await fetch(
+      `${API_URL}/admin/users/${userId}/reset-password`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ password }),
+      }
+    );
+    return response.json();
+  },
+
   getRegistrationRequests: async (
     token: string,
     params?: { status?: string; search?: string }
@@ -196,6 +257,23 @@ export const api = {
     return response.json();
   },
 
+  // ==================== NOTIFICATIONS ====================
+  // ✅ NEW: Update notification prefs (used by NotificationContext)
+  updateNotifications: async (
+    token: string,
+    notifications: Record<string, boolean>
+  ) => {
+    const response = await fetch(`${API_URL}/users/me/notifications`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ notifications }),
+    });
+    return response.json();
+  },
+
   // ==================== RAMADAN PAYMENTS ====================
   initiateRamadanPayment: async (data: {
     reg_no: string;
@@ -229,17 +307,14 @@ export const api = {
     params?: { status?: string; search?: string }
   ) => {
     const query = new URLSearchParams();
-
     if (params?.status && params.status !== 'all') {
       query.append('status', params.status);
     }
     if (params?.search && params.search.trim()) {
       query.append('search', params.search.trim());
     }
-
     const queryString = query.toString();
     const url = `${API_URL}/ramadan/payments${queryString ? `?${queryString}` : ''}`;
-
     const response = await fetch(url, {
       headers: { 'Authorization': `Bearer ${token}` },
     });
